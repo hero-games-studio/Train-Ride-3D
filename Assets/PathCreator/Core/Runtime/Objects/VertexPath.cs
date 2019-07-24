@@ -54,7 +54,6 @@ namespace PathCreation {
         ///<param name="accuracy">Higher value means the change in angle is checked more frequently.</param>
         public VertexPath (BezierPath bezierPath, Transform transform, float vertexSpacing):
             this (bezierPath, VertexPathUtility.SplitBezierPathEvenly (bezierPath, Mathf.Max (vertexSpacing, minVertexSpacing), VertexPath.accuracy), transform) { }
-
         /// Internal contructor
         VertexPath (BezierPath bezierPath, VertexPathUtility.PathSplitData pathSplitData, Transform transform) {
             this.transform = transform;

@@ -16,4 +16,12 @@ public class Tracks : MonoBehaviour
     {
         
     }
+
+    public AbstractTrack GetNextTrack(){
+        return starting_track.GetComponent<AbstractTrack>();
+    }
+
+    public AbstractTrack GetNextTrack(GameObject track){
+        return starting_track.GetComponent<AbstractTrack>();
+    }
 }
