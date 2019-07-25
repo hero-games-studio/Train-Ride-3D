@@ -25,21 +25,31 @@ MonoBehaviour:
   UserMessagesSubmitted: 0
   UserMessagesFailed: 0
   CustomArea: 
-  gameKey: []
-  secretKey: []
-  Build: []
-  SelectedPlatformStudio: []
-  SelectedPlatformGame: []
-  SelectedPlatformGameID: 
-  SelectedStudio: 
-  SelectedGame: 
+  gameKey:
+  - 99766aea9481ff759e8bd35ab8eae710
+  - c997c9add9cd6f81bcb4d0d50c1f289e
+  secretKey:
+  - ab5e1489d93595e66a8c3fee4575c79f25af1022
+  - f1cf7365549c77321fc3b602b625e94f2f434cbb
+  Build:
+  - 0.1
+  - 0.1
+  SelectedPlatformStudio:
+  - Hero Games
+  - Hero Games
+  SelectedPlatformGame:
+  - Train Ride iOS
+  - Train Ride Android
+  SelectedPlatformGameID: 0333010004330100
+  SelectedStudio: 0200000002000000
+  SelectedGame: 0700000005000000
   NewVersion: 
   Changes: 
-  SignUpOpen: 1
+  SignUpOpen: 0
   StudioName: 
-  GameName: 
-  EmailGA: 
-  IntroScreen: 1
+  GameName: Train Ride Android
+  EmailGA: hello@herogamestudio.com
+  IntroScreen: 0
   InfoLogEditor: 1
   InfoLogBuild: 1
   VerboseLogBuild: 0
@@ -52,8 +62,8 @@ MonoBehaviour:
   ResourceItemTypes: []
   ResourceCurrencies: []
   LastCreatedGamePlatform: 0
-  Platforms: 
-  CurrentInspectorState: 0
+  Platforms: 080000000b000000
+  CurrentInspectorState: 1
   ClosedHints: 
   DisplayHints: 0
   DisplayHintsScrollState: {x: 0, y: 0}
@@ -79,7 +89,7 @@ MonoBehaviour:
   IncludeGooglePlay: 1
   FpsCriticalThreshold: 20
   FpsCirticalSubmitInterval: 1
-  PlatformFoldOut: 
+  PlatformFoldOut: 0101
   CustomDimensions01FoldOut: 0
   CustomDimensions02FoldOut: 0
   CustomDimensions03FoldOut: 0

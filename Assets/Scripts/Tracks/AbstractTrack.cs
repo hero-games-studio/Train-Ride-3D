@@ -10,5 +10,7 @@ public abstract class AbstractTrack : MonoBehaviour
 
     abstract public PathCreator GetPathDir(int dir);
 
+    abstract public int GetOffset();
+
     abstract public void toggle_direction();
 }

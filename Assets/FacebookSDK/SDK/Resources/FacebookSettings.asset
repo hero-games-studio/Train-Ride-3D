@@ -16,9 +16,9 @@ MonoBehaviour:
   clientTokens:
   - 
   appIds:
-  - 0
+  - 465166377615505
   appLabels:
-  - App Name
+  - Train Ride 3D
   cookie: 1
   logging: 1
   status: 1

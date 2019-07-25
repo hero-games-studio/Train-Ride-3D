@@ -13,6 +13,34 @@ public class TapDetection : MonoBehaviour
 
     void Update()
     {
+        #if UNITY_EDITOR
+        ClickMethod();
+        #endif 
+
+        #if UNITY_IOS
+        TouchMethod();
+        #endif
+    }
+
+    private static void ClickMethod()
+    {   
+        Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit raycastHit;
+        Physics.Raycast(raycast, out raycastHit);
+        if(Input.GetMouseButtonDown(0)){
+            if (Physics.Raycast(raycast, out raycastHit))
+            {
+                if (raycastHit.collider.CompareTag("Junction"))
+                {
+                    EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
+                    EventManager.EmitEvent("JUNCTION_TAPPED");
+                }
+            }
+        }
+
+    }
+    private static void TouchMethod()
+    {
         if ((Input.touchCount > 0) && (Input.GetTouch(0).phase == TouchPhase.Began))
         {
             Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
@@ -23,7 +51,7 @@ public class TapDetection : MonoBehaviour
                 if (raycastHit.collider.CompareTag("Junction"))
                 {
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
-                    EventManager.EmitEvent("JUNCTION_TAPPED"); 
+                    EventManager.EmitEvent("JUNCTION_TAPPED");
                 }
             }
         }

@@ -28,4 +28,8 @@ public class StraightTrack : AbstractTrack
     
     override public void toggle_direction(){
     }
+
+    override public int GetOffset(){
+        return 0;
+    }
 }

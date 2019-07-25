@@ -60,4 +60,8 @@ public class TwoWayJunction : AbstractTrack
             update_direction(-1);
         }
     }
+
+    override public int GetOffset(){
+        return _picked_dir;
+    }
 }
