@@ -1,15 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PathCreation;
-
 public class TwoWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
     private int _picked_dir;
+    public PathSpline leftpath;
+    public PathSpline rightpath;
     void Start()
     {
-        
+        //Generate paths from children.
+        leftpath = new PathSpline();
+        Transform leftpathobj = transform.Find("LeftPath");
+        for (int i = 0; i < leftpathobj.childCount; i++)
+        {   
+            Transform child = leftpathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            leftpath.AddNode(newnode);
+        }
+
+        rightpath = new PathSpline();
+        Transform rightpathobj = transform.Find("RightPath");
+        for (int i = 0; i < rightpathobj.childCount; i++)
+        {   
+            Transform child = rightpathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            rightpath.AddNode(newnode);
+        }
     }
 
     // Update is called once per frame
@@ -18,19 +35,19 @@ public class TwoWayJunction : AbstractTrack
         
     }
 
-    override public PathCreator GetPath(){
+    override public PathSpline GetPath(){
         if(_picked_dir<=0){
-            return transform.Find("PathLeft").GetComponent<PathCreator>();
+            return leftpath;
         } else {
-            return transform.Find("PathRight").GetComponent<PathCreator>();
+            return rightpath;
         }
     }
 
-    override public PathCreator GetPathDir(int dir){
+    override public PathSpline GetPathDir(int dir){
         if(dir<=0){
-            return transform.Find("PathLeft").GetComponent<PathCreator>();
+            return leftpath;
         } else {
-            return transform.Find("PathRight").GetComponent<PathCreator>();
+            return rightpath;
         }
     }
 

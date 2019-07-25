@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TigerForge;
-using PathCreation;
 
 public class TrainController : MonoBehaviour
 {
 
+    public int framerate_target = 60;
     private GameObject train_head;
     private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
     //------//
@@ -15,46 +15,36 @@ public class TrainController : MonoBehaviour
     public GameObject train_head_prefab;
     public GameObject carriage_prefab;
 
+    private PathSpline traverser_path = new PathSpline();
+
     public Tracks tracks_object;
 
-    private Dictionary<GameObject,PathCreator> module_path_map = new Dictionary<GameObject,PathCreator>();
 
     // Start is called before the first frame update
 
-    void InitializeTrain(PathCreator start_path){
+    void InitializeTrain(){
+        
+
         train_head = Instantiate(train_head_prefab);
-        module_path_map.Add(train_head,start_path);
-        distance_travelled = 2;
+        distance_travelled = 0;
         for (int i = 0; i < carriage_count; i++)
         {
             GameObject new_carriage = Instantiate(carriage_prefab);
             train_carriages.AddLast(new_carriage);
-            module_path_map.Add(new_carriage,start_path);
-            distance_map.Add(new_carriage,distance_travelled-(i+1)*seperation);
         }
     }
     void Start()
     {
+        Application.targetFrameRate = framerate_target;
+
         EventManager.StartListening("JUNCTION_TAPPED",JunctionTapped);
 
         //find start path
-        PathCreator start_path = (tracks_object.GetNextTrack() as AbstractTrack).GetPath();
-        path_list.AddLast(start_path);
-
-        InitializeTrain(start_path);
+        track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
+        print(track_list.Peek().gameObject.name);
+        InitializeTrain();
     }
 
-    private Vector3[] PathToArray(PathCreator path){
-        int res = 20;
-        List<Vector3> temp = new List<Vector3>();
-        float total_length = path.path.length;
-        float increment = total_length/(res-1);
-        for (int i = 0; i < res; i++)
-        {
-            temp.Add(path.path.GetPointAtDistance(increment*i,end));
-        }
-        return temp.ToArray();
-    }
 
     public void JunctionTapped(){
         GameObject junction_object = EventManager.GetGameObject("JUNCTION_TAPPED");
@@ -63,34 +53,72 @@ public class TrainController : MonoBehaviour
     }
 
     private float distance_travelled = 0;
-    private LinkedList<PathCreator> path_list = new LinkedList<PathCreator>();
-    private Dictionary<GameObject,float> distance_map = new Dictionary<GameObject,float>();
-    public EndOfPathInstruction end;
+    private Queue<AbstractTrack> track_list = new Queue<AbstractTrack>();
+    private Dictionary<GameObject,float> carriage_dist_travelled_map = new Dictionary<GameObject,float>();
 
 
+    public void AddPath(PathSpline path){
+        //paused = true;
+        //path_queue.Add(path);
+        //pos_map.Add(totalLength,path);
+        LinkedList<KeyValuePair<float,PathNode>> list = new LinkedList<KeyValuePair<float,PathNode>>();
+        
+        foreach (KeyValuePair<float,PathNode> temp in path.node_map)
+        {
+            list.AddLast(temp);
+        }
+
+
+
+        foreach (KeyValuePair<float,PathNode> temp in list)
+        {   
+            if(traverser_path.back != null){
+                if(Mathf.Abs(temp.Value.x - traverser_path.back.x)<0.05 && Mathf.Abs(temp.Value.y - traverser_path.back.y)<0.05){
+                    continue;
+                }
+            }
+            //liner.positionCount = (liner.positionCount + 1);
+            PathNode newnode = new PathNode(temp.Value.x,temp.Value.y,temp.Value.z);
+            //vertices.Add(newnode.getVector() + new Vector3(0,5,0));
+            //Point newpoint = Instantiate(linerendererobj, new Vector3(newnode.x, 2, newnode.y), Quaternion.identity).GetComponent<Point>();
+            //newpoint.SetNum(count);
+            //count++;
+            //liner.SetPositions(vertices.ToArray());
+            traverser_path.AddNode(newnode);
+        }
+        //paused = false;
+    }
     public float seperation = 1.4f;
     private int count = 0;
+
+    private Vector3 _up = new Vector3(0,1,0);
     void Update() {
+        if(Time.realtimeSinceStartup<4){
+            return;
+        }
+
+
         distance_travelled += train_speed * Time.deltaTime;
-        train_head.transform.position = module_path_map[train_head].path.GetPointAtDistance(distance_travelled, end);
-        train_head.transform.rotation = module_path_map[train_head].path.GetRotationAtDistance(distance_travelled, end);
+        while(track_list.Count != 0){
+            AbstractTrack last_track = track_list.Dequeue();
+            AddPath(last_track.GetPath());
+        }
+        if(traverser_path.totalLength - distance_travelled < 0.001f){
+            track_list.Enqueue(tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1)));
+        }
+        train_head.transform.position = traverser_path.PositionAt(distance_travelled,train_head);
+        train_head.transform.SetPositionAndRotation(train_head.transform.position, Quaternion.LookRotation(traverser_path.directionAt(distance_travelled,train_head),_up));
+
         count = 0;
         foreach (GameObject carriage in train_carriages)
         {
-            distance_map[carriage] = distance_map[carriage]  + train_speed * Time.deltaTime;
             count++;
-            carriage.transform.position = module_path_map[carriage].path.GetPointAtDistance(distance_map[carriage], end);
-            carriage.transform.rotation = module_path_map[carriage].path.GetRotationAtDistance(distance_map[carriage], end);
-            if(module_path_map[carriage].path.length - distance_map[carriage] < 0.0001f){
-                module_path_map[carriage] = path_list.Find(module_path_map[carriage]).Next.Value;
-                distance_map[carriage] = 0;
-            }  
+            carriage.transform.position = traverser_path.PositionAt(Mathf.Clamp(distance_travelled - count*seperation,0,distance_travelled),carriage);
+            carriage.transform.SetPositionAndRotation(carriage.transform.position, Quaternion.LookRotation(traverser_path.directionAt(Mathf.Clamp(distance_travelled - count*seperation,0,distance_travelled),carriage),_up));
+
+            
         }
 
-        if(module_path_map[train_head].path.length - distance_travelled < 0.0001f){
-            distance_travelled = 0;
-            path_list.AddLast(tracks_object.GetNextTrack(path_list.Last.Value.gameObject.transform.parent.gameObject).GetPath());
-            module_path_map[train_head] = path_list.Last.Value;
-        }
+        
     }
 }

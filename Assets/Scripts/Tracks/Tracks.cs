@@ -27,7 +27,6 @@ public class Tracks : MonoBehaviour
     }
 
     public AbstractTrack GetNextTrack(GameObject track){
-        print(track.name);
         int offset =  track.GetComponent<AbstractTrack>().GetOffset();
         Vector3 ref_pos = track.transform.position + new Vector3(offset*3,0,4);
         GameObject closest = track;
@@ -43,4 +42,34 @@ public class Tracks : MonoBehaviour
 
         return closest.GetComponent<AbstractTrack>();
     }
+
+    public AbstractTrack GetNextTrack(Vector3 pos){
+        GameObject track = new GameObject();
+        float dist2 = Mathf.Infinity;
+        foreach (GameObject track_object in track_array)
+        {
+            float this_dist = (track_object.transform.position - pos).magnitude;
+            if(this_dist < dist2){
+                dist2 = this_dist;
+                track = track_object;
+            }
+        }
+
+        int offset =  track.GetComponent<AbstractTrack>().GetOffset();
+        Vector3 ref_pos = track.transform.position + new Vector3(offset*3,0,4);
+        GameObject closest = track;
+        float dist = Mathf.Infinity;
+        foreach (GameObject track_object in track_array)
+        {
+            float this_dist = (track_object.transform.position - ref_pos).magnitude;
+            if(this_dist < dist){
+                dist = this_dist;
+                closest = track_object;
+            }
+        }
+
+        return closest.GetComponent<AbstractTrack>();
+    }
+
+   
 }

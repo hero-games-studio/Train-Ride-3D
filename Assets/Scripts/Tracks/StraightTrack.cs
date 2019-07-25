@@ -1,14 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PathCreation;
 
 public class StraightTrack : AbstractTrack
 {
     // Start is called before the first frame update
+    private  PathSpline path;
     void Start()
     {
-        
+        path = new PathSpline();
+        Transform pathobj = transform.Find("Path");
+        for (int i = 0; i < pathobj.childCount; i++)
+        {   
+            Transform child = pathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            path.AddNode(newnode);
+        }
     }
 
     // Update is called once per frame
@@ -17,12 +24,12 @@ public class StraightTrack : AbstractTrack
         
     }
 
-    override public PathCreator GetPath(){
-        return transform.Find("Path").GetComponent<PathCreator>();
+    override public PathSpline GetPath(){
+        return path;
     }
 
-    override public PathCreator GetPathDir(int dir){
-        return transform.Find("Path").GetComponent<PathCreator>();
+    override public PathSpline GetPathDir(int dir){
+        return path;
     }
 
     
