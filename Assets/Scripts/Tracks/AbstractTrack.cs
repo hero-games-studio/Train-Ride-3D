@@ -12,4 +12,6 @@ public abstract class AbstractTrack : MonoBehaviour
     abstract public int GetOffset();
 
     abstract public void toggle_direction();
+
+    abstract public void lock_track();
 }

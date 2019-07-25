@@ -5,9 +5,10 @@ using TigerForge;
 
 public class TrainController : MonoBehaviour
 {
-
+    private bool _CRASHED = false;
     public int framerate_target = 60;
     private GameObject train_head;
+    private CameraController camera_controller;
     private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
     //------//
     public int carriage_count = 2;
@@ -35,13 +36,12 @@ public class TrainController : MonoBehaviour
     }
     void Start()
     {
-        Application.targetFrameRate = framerate_target;
+        //Application.targetFrameRate = framerate_target;
 
         EventManager.StartListening("JUNCTION_TAPPED",JunctionTapped);
-
+        camera_controller = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraController>();
         //find start path
         track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
-        print(track_list.Peek().gameObject.name);
         InitializeTrain();
     }
 
@@ -93,6 +93,9 @@ public class TrainController : MonoBehaviour
 
     private Vector3 _up = new Vector3(0,1,0);
     void Update() {
+        if(_CRASHED){
+            return;
+        }
         if(Time.realtimeSinceStartup<4){
             return;
         }
@@ -103,12 +106,16 @@ public class TrainController : MonoBehaviour
             AbstractTrack last_track = track_list.Dequeue();
             AddPath(last_track.GetPath());
         }
-        if(traverser_path.totalLength - distance_travelled < 0.001f){
-            track_list.Enqueue(tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1)));
+        if(traverser_path.totalLength - distance_travelled < 2f){
+            AbstractTrack nexttrack = tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1));
+            track_list.Enqueue(nexttrack);
+            nexttrack.lock_track();
         }
         train_head.transform.position = traverser_path.PositionAt(distance_travelled,train_head);
         train_head.transform.SetPositionAndRotation(train_head.transform.position, Quaternion.LookRotation(traverser_path.directionAt(distance_travelled,train_head),_up));
-
+        if(camera_controller != null){
+            camera_controller.UpdateCamera();
+        }
         count = 0;
         foreach (GameObject carriage in train_carriages)
         {
@@ -120,5 +127,9 @@ public class TrainController : MonoBehaviour
         }
 
         
+    }
+
+    public void Crash(){
+        _CRASHED = true;
     }
 }

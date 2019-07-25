@@ -44,7 +44,7 @@ public class Tracks : MonoBehaviour
     }
 
     public AbstractTrack GetNextTrack(Vector3 pos){
-        GameObject track = new GameObject();
+        GameObject track = gameObject;
         float dist2 = Mathf.Infinity;
         foreach (GameObject track_object in track_array)
         {

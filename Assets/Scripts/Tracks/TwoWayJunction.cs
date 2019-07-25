@@ -5,6 +5,8 @@ public class TwoWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
     private int _picked_dir;
+
+    private bool locked = false;
     public PathSpline leftpath;
     public PathSpline rightpath;
     void Start()
@@ -27,6 +29,9 @@ public class TwoWayJunction : AbstractTrack
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             rightpath.AddNode(newnode);
         }
+
+        _picked_dir = 1;
+        update_visual();
     }
 
     // Update is called once per frame
@@ -52,6 +57,11 @@ public class TwoWayJunction : AbstractTrack
     }
 
     private void update_visual(){
+        if(locked){
+            transform.Find("LeftVisual").gameObject.SetActive(false);
+            transform.Find("RightVisual").gameObject.SetActive(false);
+            return;
+        }
         bool picked = false;
         if(_picked_dir == -1){
             picked = true;
@@ -61,6 +71,9 @@ public class TwoWayJunction : AbstractTrack
     }
 
     private void update_direction(int dir){
+        if(locked){
+            return;
+        }
         if(dir<=0){
             _picked_dir = -1;
         }else{
@@ -76,6 +89,11 @@ public class TwoWayJunction : AbstractTrack
         }else{
             update_direction(-1);
         }
+    }
+
+    override public void lock_track(){
+        locked = true;
+        update_visual();
     }
 
     override public int GetOffset(){

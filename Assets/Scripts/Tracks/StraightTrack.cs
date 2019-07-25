@@ -36,6 +36,9 @@ public class StraightTrack : AbstractTrack
     override public void toggle_direction(){
     }
 
+    override public void lock_track(){
+    }
+
     override public int GetOffset(){
         return 0;
     }

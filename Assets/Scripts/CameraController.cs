@@ -22,11 +22,15 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    public void UpdateCamera(){
         if(train_head == null){
             train_head = GameObject.FindGameObjectWithTag("TrainHead");
             offset = -transform.position + train_head.transform.position;
             return;
         }
-        transform.position = train_head.transform.position - offset;
+        transform.position = new Vector3(train_head.transform.position.x,(train_head.transform.position - offset).y,(train_head.transform.position - offset).z);
     }
 }
