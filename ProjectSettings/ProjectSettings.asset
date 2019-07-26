@@ -161,6 +161,8 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.HeroGames.TrainRide
+    Standalone: com.HeroGames.TrainRide
+    iPhone: com.HeroGames.TrainRide
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16

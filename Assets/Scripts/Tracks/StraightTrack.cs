@@ -42,4 +42,12 @@ public class StraightTrack : AbstractTrack
     override public int GetOffset(){
         return 0;
     }
+
+    override public float get_miny(){
+        return transform.Find("Path").Find("p0").position.z;
+    }
+
+    override public float get_maxy(){
+        return transform.Find("Path").Find("p1").position.z;
+    }
 }

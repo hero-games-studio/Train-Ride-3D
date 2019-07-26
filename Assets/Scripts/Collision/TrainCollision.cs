@@ -22,8 +22,6 @@ public class TrainCollision : MonoBehaviour
     }
 
     private void Collision(){
-        print(trainhead.name);
-        print(controller.gameObject.name);
         GameObject[] data = EventManager.GetData("Collision") as GameObject[];
         if(data[1] == trainhead){ //other object hit trainhead
             controller.Crash();

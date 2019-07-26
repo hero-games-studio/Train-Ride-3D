@@ -8,6 +8,12 @@ public class Tracks : MonoBehaviour
     public GameObject starting_track;
 
     private List<GameObject> track_array = new List<GameObject>();
+
+    public List<GameObject> get_track_array{
+        get{
+            return track_array;
+        }
+    }
     void Start()
     {
         for (int i = 0; i < transform.childCount; i++)

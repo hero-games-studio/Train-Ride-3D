@@ -9,6 +9,9 @@ public class TwoWayJunction : AbstractTrack
     private bool locked = false;
     public PathSpline leftpath;
     public PathSpline rightpath;
+
+    public PathSpline leftpath_reverse;
+    public PathSpline rightpath_reverse;
     void Start()
     {
         //Generate paths from children.
@@ -21,6 +24,14 @@ public class TwoWayJunction : AbstractTrack
             leftpath.AddNode(newnode);
         }
 
+        leftpath_reverse = new PathSpline();
+        for (int i = leftpathobj.childCount-1; i > -1; i--)
+        {   
+            Transform child = leftpathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            leftpath_reverse.AddNode(newnode);
+        }
+
         rightpath = new PathSpline();
         Transform rightpathobj = transform.Find("RightPath");
         for (int i = 0; i < rightpathobj.childCount; i++)
@@ -28,6 +39,14 @@ public class TwoWayJunction : AbstractTrack
             Transform child = rightpathobj.Find("p"+i);
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             rightpath.AddNode(newnode);
+        }
+
+        rightpath_reverse = new PathSpline();
+        for (int i = rightpathobj.childCount-1; i > -1; i--)
+        {   
+            Transform child = rightpathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            rightpath_reverse.AddNode(newnode);
         }
 
         _picked_dir = 1;
@@ -41,6 +60,15 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPath(){
+        print(Mathf.RoundToInt(transform.eulerAngles.y));
+        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
+            GameObject tr_head = GameObject.FindGameObjectWithTag("TrainHead");
+            if(tr_head.transform.position.x<transform.position.x){
+                return rightpath_reverse;
+            }else{
+                return leftpath_reverse;
+            }
+        }
         if(_picked_dir<=0){
             return leftpath;
         } else {
@@ -49,6 +77,7 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPathDir(int dir){
+        
         if(dir<=0){
             return leftpath;
         } else {
@@ -98,5 +127,13 @@ public class TwoWayJunction : AbstractTrack
 
     override public int GetOffset(){
         return _picked_dir;
+    }
+
+    override public float get_miny(){
+        return transform.Find("LeftPath").Find("p0").position.z;
+    }
+
+    override public float get_maxy(){
+        return transform.Find("LeftPath").Find("p10").position.z;
     }
 }

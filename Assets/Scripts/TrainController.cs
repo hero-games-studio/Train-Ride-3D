@@ -12,7 +12,7 @@ public class TrainController : MonoBehaviour
     private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
     //------//
     public int carriage_count = 2;
-    public float train_speed = 5;
+    public float max_train_speed = 5;
     public GameObject train_head_prefab;
     public GameObject carriage_prefab;
 
@@ -24,7 +24,7 @@ public class TrainController : MonoBehaviour
     // Start is called before the first frame update
 
     void InitializeTrain(){
-        
+        CalculateTotalY();
 
         train_head = Instantiate(train_head_prefab);
         distance_travelled = 0;
@@ -96,12 +96,11 @@ public class TrainController : MonoBehaviour
         if(_CRASHED){
             return;
         }
-        if(Time.realtimeSinceStartup<4){
+        if(Time.realtimeSinceStartup<5){
             return;
         }
 
-
-        distance_travelled += train_speed * Time.deltaTime;
+        distance_travelled += CalculateCurrentSpeed() * Time.deltaTime;
         while(track_list.Count != 0){
             AbstractTrack last_track = track_list.Dequeue();
             AddPath(last_track.GetPath());
@@ -127,6 +126,47 @@ public class TrainController : MonoBehaviour
         }
 
         
+    }
+
+    /*
+        Generate a speed function
+     */
+    private float total_y;
+    private float min_y;
+    private float max_y;
+    private void CalculateTotalY(){
+        max_y = -Mathf.Infinity;
+        min_y = Mathf.Infinity;
+        AbstractTrack track;
+        foreach (var obj in tracks_object.get_track_array)
+        {
+            track = obj.GetComponent<AbstractTrack>();
+            if(track.get_maxy() > max_y){
+                max_y = track.get_maxy();
+            }
+            if(track.get_miny()  < min_y){
+                min_y = track.get_miny();
+            }
+        }
+        total_y = (max_y - min_y);
+    }
+
+    private float tanh(float t){
+       return (Mathf.Exp(t) - Mathf.Exp(-t))/(Mathf.Exp(t) + Mathf.Exp(-t));
+    }
+
+    private int curve = 13;
+    private float min_speed = 1;
+    private float CalculateCurrentSpeed(){
+        float train_y = train_head.transform.position.z - min_y;
+        if(total_y < -15000 || total_y >15000){
+            CalculateTotalY();
+        }
+        if(train_y <= min_y + total_y/2){
+            return min_speed + ((max_train_speed-min_speed)*tanh(train_y/curve)*tanh(train_y/curve));
+        }else{
+            return min_speed + ((max_train_speed-min_speed)*tanh((total_y - train_y)/curve)*tanh((total_y - train_y)/curve));
+        }
     }
 
     public void Crash(){

@@ -14,4 +14,7 @@ public abstract class AbstractTrack : MonoBehaviour
     abstract public void toggle_direction();
 
     abstract public void lock_track();
+
+    abstract public float get_miny();
+    abstract public float get_maxy();
 }
