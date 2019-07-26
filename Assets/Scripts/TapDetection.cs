@@ -35,6 +35,11 @@ public class TapDetection : MonoBehaviour
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
                 }
+                else if (raycastHit.collider.CompareTag("Rocks")){
+                    raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
+                }else if (raycastHit.collider.CompareTag("Bush")){
+                    raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
+                }
             }
         }
 
@@ -52,8 +57,13 @@ public class TapDetection : MonoBehaviour
                 {
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
+                }else if (raycastHit.collider.CompareTag("Rocks")){
+                    raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
+                }else if (raycastHit.collider.CompareTag("Bush")){
+                    raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
                 }
             }
+                
         }
     }
 }

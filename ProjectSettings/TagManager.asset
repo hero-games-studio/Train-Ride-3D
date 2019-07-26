@@ -8,6 +8,7 @@ TagManager:
   - TrainHead
   - Rocks
   - TrainController
+  - Bush
   layers:
   - Default
   - TransparentFX

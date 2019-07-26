@@ -49,6 +49,10 @@ public class TwoWayJunction : AbstractTrack
             rightpath_reverse.AddNode(newnode);
         }
 
+        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
+            lock_track();
+        }
+
         _picked_dir = 1;
         update_visual();
     }
@@ -60,7 +64,6 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPath(){
-        print(Mathf.RoundToInt(transform.eulerAngles.y));
         if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
             GameObject tr_head = GameObject.FindGameObjectWithTag("TrainHead");
             if(tr_head.transform.position.x<transform.position.x){
