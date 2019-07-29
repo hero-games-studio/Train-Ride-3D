@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class TwoWayJunction : AbstractTrack
+
+public class ThreeWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
     private int _picked_dir;
 
-    private bool rotated = false;
     private bool locked = false;
+    
+    private bool rotated = false;
     public PathSpline leftpath;
+    public PathSpline middlepath;
     public PathSpline rightpath;
 
     public PathSpline leftpath_reverse;
+    public PathSpline middlepath_reverse;
     public PathSpline rightpath_reverse;
     void Start()
     {
@@ -31,6 +35,23 @@ public class TwoWayJunction : AbstractTrack
             Transform child = leftpathobj.Find("p"+i);
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             leftpath_reverse.AddNode(newnode);
+        }
+
+        middlepath = new PathSpline();
+        Transform middlepathobj = transform.Find("MiddlePath");
+        for (int i = 0; i < middlepathobj.childCount; i++)
+        {   
+            Transform child = middlepathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            middlepath.AddNode(newnode);
+        }
+
+        middlepath_reverse = new PathSpline();
+        for (int i = middlepathobj.childCount-1; i > -1; i--)
+        {   
+            Transform child = middlepathobj.Find("p"+i);
+            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
+            middlepath_reverse.AddNode(newnode);
         }
 
         rightpath = new PathSpline();
@@ -65,68 +86,77 @@ public class TwoWayJunction : AbstractTrack
         
     }
 
-    override public bool usable_junction(){
-        if(rotated){
-            return false;
-        }
-        return true;
-    }
-
     override public PathSpline GetPath(){
-        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
+        if(rotated){
             GameObject tr_head = GameObject.FindGameObjectWithTag("TrainHead");
-            if(tr_head.transform.position.x<transform.position.x){
+            if(tr_head.transform.position.x-transform.position.x < -0.1f){
                 return rightpath_reverse;
-            }else{
+            }else if(tr_head.transform.position.x-transform.position.x > 0.1f){
                 return leftpath_reverse;
+            }else{
+                return middlepath_reverse;
             }
         }
-        if(_picked_dir<=0){
+        print("GET PATH DIR: "+_picked_dir);
+        if(_picked_dir<0){
             return leftpath;
-        } else {
+        } else if(_picked_dir>0) {
             return rightpath;
+        } else{
+            return middlepath;
         }
     }
 
     override public PathSpline GetPathDir(int dir){
         
-        if(dir<=0){
+        if(dir<0){
             return leftpath;
-        } else {
+        } else if (dir>0) {
             return rightpath;
+        } else{
+            return middlepath;
         }
     }
 
     private void update_visual(){
         if(locked){
             transform.Find("LeftVisual").gameObject.SetActive(false);
+            transform.Find("MiddleVisual").gameObject.SetActive(false);
             transform.Find("RightVisual").gameObject.SetActive(false);
             return;
         }
-        bool picked = false;
-        if(_picked_dir == -1){
-            picked = true;
-        }
-        transform.Find("LeftVisual").gameObject.SetActive(picked);
-        transform.Find("RightVisual").gameObject.SetActive(!picked);
+    
+        transform.Find("LeftVisual").gameObject.SetActive(_picked_dir == -1);
+        transform.Find("MiddleVisual").gameObject.SetActive(_picked_dir == 0);
+        transform.Find("RightVisual").gameObject.SetActive(_picked_dir == 1);
     }
 
     private void update_direction(int dir){
+        print(dir);
         if(locked){
             return;
         }
-        if(dir<=0){
+        if(dir<0){
             _picked_dir = -1;
-        }else{
+        }else if(dir>0){
             _picked_dir = 1;
+        }else{
+            _picked_dir = 0;
         }
         update_visual();
     }
+
+    override public bool usable_junction(){
+        if(rotated){
+            return false;
+        }
+        return true;
+    }
     override public void toggle_direction(){
         if(_picked_dir == -1){
+            update_direction(0);
+        }else if(_picked_dir == 0){
             update_direction(1);
-        }else if(_picked_dir == 1){
-            update_direction(-1);
         }else{
             update_direction(-1);
         }
@@ -141,21 +171,21 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public int GetOffset(){
-        return _picked_dir;
+        return (_picked_dir);
     }
 
     override public float get_miny(){
-        return transform.Find("LeftPath").Find("p0").position.z;
+        return transform.Find("MiddlePath").Find("p0").position.z;
     }
 
     override public float get_maxy(){
-        return transform.Find("LeftPath").Find("p10").position.z;
+        return transform.Find("MiddlePath").Find("p1").position.z;
     }
 
     override public float GetYOffset(){
         if(rotated){
             return 2.5f;
         }
-        return 6.5f;
+        return 7.5f;
     }
 }

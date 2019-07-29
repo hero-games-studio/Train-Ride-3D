@@ -8,6 +8,12 @@ public class TrainController : MonoBehaviour
     private bool _CRASHED = false;
     public int framerate_target = 60;
     private GameObject train_head;
+
+    public GameObject get_train_head{
+        get{
+            return train_head;
+        }
+    }
     private CameraController camera_controller;
     private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
     //------//
@@ -27,6 +33,7 @@ public class TrainController : MonoBehaviour
         CalculateTotalY();
 
         train_head = Instantiate(train_head_prefab);
+        Global.Instance.train_head = train_head;
         distance_travelled = 0;
         for (int i = 0; i < carriage_count; i++)
         {
@@ -42,6 +49,7 @@ public class TrainController : MonoBehaviour
         camera_controller = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraController>();
         //find start path
         track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
+        AddPath(tracks_object.starting_track.GetComponent<AbstractTrack>().GetPath());
         InitializeTrain();
     }
 
@@ -101,14 +109,18 @@ public class TrainController : MonoBehaviour
         }
 
         distance_travelled += CalculateCurrentSpeed() * Time.deltaTime;
+        /*
         while(track_list.Count != 0){
             AbstractTrack last_track = track_list.Dequeue();
+            print("adding " + last_track.gameObject.name);
             AddPath(last_track.GetPath());
-        }
+        }*/
         if(traverser_path.totalLength - distance_travelled < 2f){
-            AbstractTrack nexttrack = tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1));
-            track_list.Enqueue(nexttrack);
-            nexttrack.lock_track();
+            tracks_object.RequestPath(this);
+
+            //AbstractTrack nexttrack = tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1));
+            //track_list.Enqueue(nexttrack);
+            //nexttrack.lock_track();
         }
         train_head.transform.position = traverser_path.PositionAt(distance_travelled,train_head);
         train_head.transform.SetPositionAndRotation(train_head.transform.position, Quaternion.LookRotation(traverser_path.directionAt(distance_travelled,train_head),_up));

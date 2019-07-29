@@ -17,4 +17,12 @@ public abstract class AbstractTrack : MonoBehaviour
 
     abstract public float get_miny();
     abstract public float get_maxy();
+
+    virtual public bool usable_junction(){
+        return false;
+    }
+
+    virtual public float GetYOffset(){
+        return 6.5f;
+    }
 }

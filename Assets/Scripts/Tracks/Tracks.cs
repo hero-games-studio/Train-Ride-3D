@@ -20,6 +20,7 @@ public class Tracks : MonoBehaviour
         {
             track_array.Add(transform.GetChild(i).gameObject);
         }
+        Global.Instance.tracks_object = this;
     }
 
     // Update is called once per frame
@@ -34,7 +35,8 @@ public class Tracks : MonoBehaviour
 
     public AbstractTrack GetNextTrack(GameObject track){
         int offset =  track.GetComponent<AbstractTrack>().GetOffset();
-        Vector3 ref_pos = track.transform.position + new Vector3(offset*3,0,4);
+        float z_offset = track.GetComponent<AbstractTrack>().GetYOffset();
+        Vector3 ref_pos = track.transform.position + new Vector3(offset*3,0,z_offset);
         GameObject closest = track;
         float dist = Mathf.Infinity;
         foreach (GameObject track_object in track_array)
@@ -77,5 +79,48 @@ public class Tracks : MonoBehaviour
         return closest.GetComponent<AbstractTrack>();
     }
 
-   
+    public AbstractTrack GetTrackAt(Vector3 pos){
+        GameObject track = gameObject;
+        float dist2 = Mathf.Infinity;
+        foreach (GameObject track_object in track_array)
+        {
+            float z_dist = -(track_object.transform.position.z - pos.z);
+            float this_dist = (track_object.transform.position - pos).magnitude;
+            if(z_dist<0){
+                continue;
+            }
+            if(this_dist < dist2){
+                dist2 = this_dist;
+                track = track_object;
+            }
+        }
+        return track.GetComponent<AbstractTrack>();
+    }
+
+    public void RequestPath(TrainController controller){
+
+        AbstractTrack picked_track = GetNextTrack(GetTrackAt(controller.get_train_head.transform.position).gameObject);
+        controller.AddPath(picked_track.GetPath());
+        picked_track.lock_track();
+        
+        int count = 0;
+        picked_track = GetNextTrack(picked_track.gameObject);
+        while(!(picked_track.gameObject.CompareTag("Junction") && picked_track.usable_junction())){
+            count++;
+            controller.AddPath(picked_track.GetPath());
+            picked_track.lock_track();
+
+            picked_track = GetNextTrack(picked_track.gameObject);
+            if(picked_track == null){
+                Debug.LogWarning("picked track is null");
+                break;
+            }
+            if(count>100){
+                Debug.LogError("COUNT TOO HIGH. INFO: "+picked_track.gameObject.name);
+                return;
+            }
+            
+        }
+        
+    }
 }
