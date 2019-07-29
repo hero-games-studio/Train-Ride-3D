@@ -24,7 +24,13 @@ public class TrainCollision : MonoBehaviour
     private void Collision(){
         GameObject[] data = EventManager.GetData("Collision") as GameObject[];
         if(data[1] == trainhead){ //other object hit trainhead
-            controller.Crash();
+            if(data[0].CompareTag("Rocks")){
+                controller.Crash();
+            }
+            if(data[0].CompareTag("Coin")){
+                Destroy(data[0]);
+                EventManager.EmitEvent("CoinCollected");
+            }
         }
     }
 }

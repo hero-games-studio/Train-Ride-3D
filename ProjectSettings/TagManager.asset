@@ -9,6 +9,7 @@ TagManager:
   - Rocks
   - TrainController
   - Bush
+  - Coin
   layers:
   - Default
   - TransparentFX

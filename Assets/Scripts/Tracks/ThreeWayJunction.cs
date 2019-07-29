@@ -186,6 +186,6 @@ public class ThreeWayJunction : AbstractTrack
         if(rotated){
             return 2.5f;
         }
-        return 7.5f;
+        return 6.5f;
     }
 }
