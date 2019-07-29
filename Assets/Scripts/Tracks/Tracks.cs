@@ -34,14 +34,19 @@ public class Tracks : MonoBehaviour
     }
 
     public AbstractTrack GetNextTrack(GameObject track){
-        int offset =  track.GetComponent<AbstractTrack>().GetOffset();
+        float x_offset =  track.GetComponent<AbstractTrack>().GetOffset();
         float z_offset = track.GetComponent<AbstractTrack>().GetYOffset();
-        Vector3 ref_pos = track.transform.position + new Vector3(offset*3,0,z_offset);
+        Vector3 ref_pos = track.GetComponent<AbstractTrack>().GetCenter() + new Vector3(x_offset*3,0,z_offset);
+
         GameObject closest = track;
         float dist = Mathf.Infinity;
         foreach (GameObject track_object in track_array)
         {
-            float this_dist = (track_object.transform.position - ref_pos).magnitude;
+            float z_dist = -(track_object.transform.position.z - ref_pos.z);
+            float this_dist = (track_object.GetComponent<AbstractTrack>().GetCenter() - ref_pos).magnitude;
+            if(z_dist<0){
+                //continue;
+            }
             if(this_dist < dist){
                 dist = this_dist;
                 closest = track_object;
@@ -99,9 +104,10 @@ public class Tracks : MonoBehaviour
 
     public void RequestPath(TrainController controller){
 
-        AbstractTrack picked_track = GetNextTrack(GetTrackAt(controller.get_train_head.transform.position).gameObject);
+        AbstractTrack picked_track = GetTrackAt(controller.get_train_head.transform.position).GetNextTrack();
         controller.AddPath(picked_track.GetPath());
         picked_track.lock_track();
+        Global.Instance.last_inspected_track = picked_track;
         
         int count = 0;
         picked_track = GetNextTrack(picked_track.gameObject);
@@ -109,8 +115,10 @@ public class Tracks : MonoBehaviour
             count++;
             controller.AddPath(picked_track.GetPath());
             picked_track.lock_track();
+            print(picked_track.gameObject.name);
 
-            picked_track = GetNextTrack(picked_track.gameObject);
+            Global.Instance.last_inspected_track = picked_track;
+            picked_track = picked_track.GetNextTrack();
             if(picked_track == null){
                 Debug.LogWarning("picked track is null");
                 break;
@@ -119,7 +127,6 @@ public class Tracks : MonoBehaviour
                 Debug.LogError("COUNT TOO HIGH. INFO: "+picked_track.gameObject.name);
                 return;
             }
-            
         }
         
     }

@@ -19,6 +19,7 @@ public class ThreeWayJunction : AbstractTrack
     public PathSpline rightpath_reverse;
     void Start()
     {
+        CalculateNextTrack();
         //Generate paths from children.
         leftpath = new PathSpline();
         Transform leftpathobj = transform.Find("LeftPath");
@@ -182,10 +183,11 @@ public class ThreeWayJunction : AbstractTrack
         return transform.Find("MiddlePath").Find("p1").position.z;
     }
 
-    override public float GetYOffset(){
+
+    override public Vector3 GetCenter(){
         if(rotated){
-            return 2.5f;
+            return this.gameObject.transform.position + new Vector3(0,0,-2.5f);
         }
-        return 6.5f;
+        return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
 }

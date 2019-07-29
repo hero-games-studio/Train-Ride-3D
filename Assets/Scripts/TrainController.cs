@@ -33,6 +33,7 @@ public class TrainController : MonoBehaviour
         CalculateTotalY();
 
         train_head = Instantiate(train_head_prefab);
+        print(train_head.name);
         Global.Instance.train_head = train_head;
         distance_travelled = 0;
         for (int i = 0; i < carriage_count; i++)
@@ -48,7 +49,7 @@ public class TrainController : MonoBehaviour
         EventManager.StartListening("JUNCTION_TAPPED",JunctionTapped);
         camera_controller = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraController>();
         //find start path
-        track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
+        //track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
         AddPath(tracks_object.starting_track.GetComponent<AbstractTrack>().GetPath());
         InitializeTrain();
     }
@@ -56,7 +57,13 @@ public class TrainController : MonoBehaviour
 
     public void JunctionTapped(){
         GameObject junction_object = EventManager.GetGameObject("JUNCTION_TAPPED");
+        if(junction_object == null){
+            return;
+        }
         AbstractTrack junction = junction_object.GetComponent<AbstractTrack>();
+        if(junction == null){
+            return;
+        }
         junction.toggle_direction();
     }
 
@@ -168,7 +175,7 @@ public class TrainController : MonoBehaviour
     }
 
     private int curve = 13;
-    private float min_speed = 1;
+    private float min_speed = 2;
     private float CalculateCurrentSpeed(){
         float train_y = train_head.transform.position.z - min_y;
         if(total_y < -15000 || total_y >15000){

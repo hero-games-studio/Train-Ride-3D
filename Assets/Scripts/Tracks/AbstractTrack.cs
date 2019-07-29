@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class AbstractTrack : MonoBehaviour
 {
     // Start is called before the first frame update
+    protected AbstractTrack next_track;
     abstract public PathSpline GetPath();
 
     abstract public PathSpline GetPathDir(int dir);
@@ -23,6 +24,18 @@ public abstract class AbstractTrack : MonoBehaviour
     }
 
     virtual public float GetYOffset(){
-        return 6.5f;
+        return 6f;
+    }
+
+    virtual public void CalculateNextTrack(){
+        next_track = Global.Instance.tracks_object.GetNextTrack(this.gameObject);
+    }
+
+    virtual public AbstractTrack GetNextTrack(){
+        return next_track;
+    }
+
+    virtual public Vector3 GetCenter(){
+        return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
 }

@@ -8,6 +8,7 @@ public class StraightTrack : AbstractTrack
     private  PathSpline path;
     void Start()
     {
+        CalculateNextTrack();
         path = new PathSpline();
         Transform pathobj = transform.Find("Path");
         for (int i = 0; i < pathobj.childCount; i++)
@@ -23,7 +24,6 @@ public class StraightTrack : AbstractTrack
     {
         
     }
-
     override public PathSpline GetPath(){
         return path;
     }

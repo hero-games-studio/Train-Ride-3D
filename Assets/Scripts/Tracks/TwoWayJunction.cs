@@ -4,7 +4,7 @@ using UnityEngine;
 public class TwoWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
-    private int _picked_dir;
+    public int _picked_dir;
 
     private bool rotated = false;
     private bool locked = false;
@@ -15,6 +15,7 @@ public class TwoWayJunction : AbstractTrack
     public PathSpline rightpath_reverse;
     void Start()
     {
+        CalculateNextTrack();
         //Generate paths from children.
         leftpath = new PathSpline();
         Transform leftpathobj = transform.Find("LeftPath");
@@ -55,7 +56,6 @@ public class TwoWayJunction : AbstractTrack
             lock_track();
         }
 
-        _picked_dir = 1;
         update_visual();
     }
 
@@ -73,14 +73,6 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPath(){
-        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
-            GameObject tr_head = GameObject.FindGameObjectWithTag("TrainHead");
-            if(tr_head.transform.position.x<transform.position.x){
-                return rightpath_reverse;
-            }else{
-                return leftpath_reverse;
-            }
-        }
         if(_picked_dir<=0){
             return leftpath;
         } else {
@@ -141,6 +133,9 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public int GetOffset(){
+        if(rotated){
+            return 0;
+        }
         return _picked_dir;
     }
 
@@ -152,10 +147,12 @@ public class TwoWayJunction : AbstractTrack
         return transform.Find("LeftPath").Find("p10").position.z;
     }
 
-    override public float GetYOffset(){
+ 
+
+    override public Vector3 GetCenter(){
         if(rotated){
-            return 2.5f;
+            return this.gameObject.transform.position + new Vector3(0,0,-2.5f);
         }
-        return 6.5f;
+        return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
 }
