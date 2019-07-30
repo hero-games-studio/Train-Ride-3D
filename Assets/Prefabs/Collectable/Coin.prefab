@@ -155,3 +155,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6250bd7864346bf4ca3e2c289e5e0120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collision_tag: coin

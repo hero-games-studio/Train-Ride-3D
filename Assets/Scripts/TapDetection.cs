@@ -9,6 +9,7 @@ public class TapDetection : MonoBehaviour
     void Start()
     {
         UpdateNextJunction();
+        gameObject.GetComponent<TouchController>().addBehaviour(TouchPhase.Began,TouchMethod); 
     }
 
     void Update()
@@ -17,9 +18,9 @@ public class TapDetection : MonoBehaviour
         ClickMethod();
         #endif 
 
-        #if UNITY_IOS
-        TouchMethod();
-        #endif
+        //#if UNITY_IOS
+        //TouchMethod();
+        //#endif
     }
 
     private static AbstractTrack next_junction;
@@ -77,13 +78,10 @@ public class TapDetection : MonoBehaviour
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
                 }
-                else*/ if (raycastHit.collider.CompareTag("Rocks")){
-                    raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
+                else*/ if (raycastHit.collider.CompareTag("Interactable")){
+                    raycastHit.collider.gameObject.GetComponent<Interactable>().OnTap();
                     return;
-                }else if (raycastHit.collider.CompareTag("Bush")){
-                    raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
-                    return;
-                } 
+                }
             }
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
@@ -93,11 +91,11 @@ public class TapDetection : MonoBehaviour
         }
 
     }
-    private static void TouchMethod()
+    private static void TouchMethod(TouchResult result)
     {
-        if ((Input.touchCount > 0) && (Input.GetTouch(0).phase == TouchPhase.Began))
+        if (result.touch.phase == TouchPhase.Began)
         {
-            Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            Ray raycast = Camera.main.ScreenPointToRay(result.touch.position);
             RaycastHit raycastHit;
             if (Physics.Raycast(raycast, out raycastHit))
             {
@@ -106,11 +104,8 @@ public class TapDetection : MonoBehaviour
                 {
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
-                }else*/ if (raycastHit.collider.CompareTag("Rocks")){
-                    raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
-                    return;
-                }else if (raycastHit.collider.CompareTag("Bush")){
-                    raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
+                }else*/ if (raycastHit.collider.CompareTag("Interactable")){
+                    raycastHit.collider.gameObject.GetComponent<Interactable>().OnTap();
                     return;
                 }
             }

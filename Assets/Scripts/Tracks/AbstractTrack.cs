@@ -1,10 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TigerForge;
 
 public abstract class AbstractTrack : MonoBehaviour
 {
     // Start is called before the first frame update
+    void Start() {
+        EventManager.StartListening("Crashed",lock_track);
+        Init();
+    }
+
+    virtual public void Init(){
+
+    }
     protected AbstractTrack next_track;
     abstract public PathSpline GetPath();
 

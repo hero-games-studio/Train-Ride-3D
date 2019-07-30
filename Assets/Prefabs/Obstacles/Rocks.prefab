@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 605703188257863542}
   m_Layer: 0
   m_Name: Rocks
-  m_TagString: Rocks
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,6 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6250bd7864346bf4ca3e2c289e5e0120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collision_tag: rock
 --- !u!114 &8336807822891859592
 MonoBehaviour:
   m_ObjectHideFlags: 0

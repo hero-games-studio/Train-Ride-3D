@@ -4,7 +4,7 @@ using UnityEngine;
 public class TwoWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
-    public int _picked_dir;
+    private int _picked_dir;
 
     private bool locked = false;
 
@@ -12,7 +12,7 @@ public class TwoWayJunction : AbstractTrack
     public PathSpline leftpath;
     public PathSpline rightpath;
 
-    void Start()
+    override public void Init()
     {
         CalculateNextTrack();
         //Generate paths from children.
@@ -34,8 +34,8 @@ public class TwoWayJunction : AbstractTrack
             rightpath.AddNode(newnode);
         }
 
-
-
+        System.Random rand = new System.Random();
+        _picked_dir = rand.Next(0,2)*2 - 1;
         update_visual();
     }
 

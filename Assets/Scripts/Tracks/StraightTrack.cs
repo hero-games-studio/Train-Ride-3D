@@ -5,14 +5,17 @@ using UnityEngine;
 public class StraightTrack : AbstractTrack
 {
     // Start is called before the first frame update
+    public int offset = 0;
     private  PathSpline path;
-    void Start()
+    private int count = 0;
+    override public void Init()
     {
         CalculateNextTrack();
         path = new PathSpline();
         Transform pathobj = transform.Find("Path");
         for (int i = 0; i < pathobj.childCount; i++)
         {   
+            count = i;
             Transform child = pathobj.Find("p"+i);
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             path.AddNode(newnode);
@@ -40,7 +43,11 @@ public class StraightTrack : AbstractTrack
     }
 
     override public int GetOffset(){
-        return 0;
+        if(offset == 0){
+            return 0;
+        }else{
+            return (int) Mathf.Sign(transform.localScale.x);
+        }
     }
 
     override public float get_miny(){
@@ -48,6 +55,6 @@ public class StraightTrack : AbstractTrack
     }
 
     override public float get_maxy(){
-        return transform.Find("Path").Find("p1").position.z;
+        return transform.Find("Path").Find("p"+count).position.z;
     }
 }

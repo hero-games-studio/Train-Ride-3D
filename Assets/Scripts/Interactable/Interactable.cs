@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rocks : MonoBehaviour
+public abstract class Interactable : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -16,7 +16,7 @@ public class Rocks : MonoBehaviour
         
     }
 
-    public void OnTap(){
-        GetComponent<Animator>().Play("OnTap");
+    virtual public void OnTap(){
+        
     }
 }

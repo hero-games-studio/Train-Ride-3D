@@ -17,6 +17,8 @@ public class CollisionSignal : MonoBehaviour
         
     }
 
+    public string collision_tag = "";
+
 
     public void OnTriggerEnter(Collider other) {
         GameObject[] data = new GameObject[2];

@@ -23,6 +23,5 @@ public class GameManager : MonoBehaviour
 
     public void AddCoin(){
         PlayerPrefs.SetInt("coins",PlayerPrefs.GetInt("coins") + 1);
-        print("Coins: "+PlayerPrefs.GetInt("coins"));
     }
 }

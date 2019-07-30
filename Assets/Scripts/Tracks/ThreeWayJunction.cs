@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class ThreeWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
-    public int _picked_dir = 1;
+    private int _picked_dir = 1;
 
     private bool locked = false;
     private bool active = false;
@@ -14,7 +15,7 @@ public class ThreeWayJunction : AbstractTrack
     public PathSpline middlepath;
     public PathSpline rightpath;
 
-    void Start()
+    override public void Init()
     {
         CalculateNextTrack();
         //Generate paths from children.
@@ -45,8 +46,8 @@ public class ThreeWayJunction : AbstractTrack
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             rightpath.AddNode(newnode);
         }
-
-
+        System.Random rand = new System.Random();
+        _picked_dir = rand.Next(0,3) - 1;
         update_visual();
     }
 
@@ -57,7 +58,6 @@ public class ThreeWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPath(){
-        print("GET PATH DIR: "+_picked_dir);
         if(_picked_dir<0){
             return leftpath;
         } else if(_picked_dir>0) {
@@ -116,7 +116,6 @@ public class ThreeWayJunction : AbstractTrack
     }
 
     private void update_direction(int dir){
-        print(dir);
         if(locked){
             return;
         }

@@ -7,7 +7,7 @@ public class TwoJoin : AbstractTrack
     public PathSpline leftpath;
     public PathSpline rightpath;
 
-    void Start()
+    override public void Init()
     {
         CalculateNextTrack();
         //Generate paths from children.

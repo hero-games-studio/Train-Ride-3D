@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bushes : MonoBehaviour
+public class Bushes : Interactable
 {
     // Start is called before the first frame update
     private int tap_count = 0;
@@ -21,7 +21,7 @@ public class Bushes : MonoBehaviour
         transform.Find(name).gameObject.SetActive(false);
     }
 
-    public void OnTap(){
+    override public void OnTap(){
         tap_count++;
         switch(tap_count){
             case 1:

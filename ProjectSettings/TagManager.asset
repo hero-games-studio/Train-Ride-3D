@@ -10,6 +10,7 @@ TagManager:
   - TrainController
   - Bush
   - Coin
+  - Interactable
   layers:
   - Default
   - TransparentFX

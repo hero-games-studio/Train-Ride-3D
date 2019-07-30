@@ -33,7 +33,6 @@ public class TrainController : MonoBehaviour
         CalculateTotalY();
 
         train_head = Instantiate(train_head_prefab);
-        print(train_head.name);
         Global.Instance.train_head = train_head;
         distance_travelled = 0;
         for (int i = 0; i < carriage_count; i++)
@@ -45,7 +44,7 @@ public class TrainController : MonoBehaviour
     void Start()
     {
         //Application.targetFrameRate = framerate_target;
-
+        EventManager.StartListening("Honk",Honk);
         EventManager.StartListening("JUNCTION_TAPPED",JunctionTapped);
         camera_controller = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraController>();
         //find start path
@@ -190,5 +189,10 @@ public class TrainController : MonoBehaviour
 
     public void Crash(){
         _CRASHED = true;
+        EventManager.EmitEvent("Crashed");
+    }
+
+    private void Honk(){
+        train_head.transform.Find("Honk").GetComponent<AudioSource>().Play();
     }
 }
