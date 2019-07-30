@@ -8,6 +8,7 @@ public class TapDetection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Input.simulateMouseWithTouches = false;
         UpdateNextJunction();
         gameObject.GetComponent<TouchController>().addBehaviour(TouchPhase.Began,TouchMethod); 
     }
@@ -92,7 +93,7 @@ public class TapDetection : MonoBehaviour
 
     }
 
-    private static void IOSdebug(string mes){
+    public static void IOSdebug(string mes){
         EventManager.SetData("debug",mes);
         EventManager.EmitEvent("debug");
     }
@@ -118,7 +119,7 @@ public class TapDetection : MonoBehaviour
                 }
             }
             if(next_junction!=null){
-                EventManager.SetData("JUNCTION_TAPPED", next_junction);
+                EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
                 return;
             }else{

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DebugMono : MonoBehaviour
 {
     // Start is called before the first frame update
+    public bool debug_enabled = true;
     void Start()
     {
         EventManager.StartListening("debug",Test);
@@ -15,6 +16,10 @@ public class DebugMono : MonoBehaviour
     LinkedList<string> messages = new LinkedList<string>();
     private int message_limit = 4;
     public void Test(){
+        if(!debug_enabled){
+            GetComponent<Text>().text = "";
+            return;
+        }
         //Add to list
         string data = EventManager.GetString("debug");
         messages.AddFirst(data);

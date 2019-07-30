@@ -57,10 +57,12 @@ public class TrainController : MonoBehaviour
     public void JunctionTapped(){
         GameObject junction_object = EventManager.GetGameObject("JUNCTION_TAPPED");
         if(junction_object == null){
+            TapDetection.IOSdebug("JunctionTapped-- junction_object is null");
             return;
         }
         AbstractTrack junction = junction_object.GetComponent<AbstractTrack>();
         if(junction == null){
+            TapDetection.IOSdebug("JunctionTapped-- junction is null");
             return;
         }
         junction.toggle_direction();
