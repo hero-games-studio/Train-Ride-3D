@@ -91,11 +91,17 @@ public class TapDetection : MonoBehaviour
         }
 
     }
+
+    private static void IOSdebug(string mes){
+        EventManager.SetData("debug",mes);
+        EventManager.EmitEvent("debug");
+    }
     private static void TouchMethod(TouchResult result)
     {
-        EventManager.EmitEvent("touch");
+        IOSdebug(result.touch.phase.ToString());
         if (result.touch.phase == TouchPhase.Began)
         {
+            IOSdebug("entered the initial if");
             Ray raycast = Camera.main.ScreenPointToRay(result.touch.position);
             RaycastHit raycastHit;
             if (Physics.Raycast(raycast, out raycastHit))
@@ -106,6 +112,7 @@ public class TapDetection : MonoBehaviour
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
                 }else*/ if (raycastHit.collider.CompareTag("Interactable")){
+                    IOSdebug("tapped on interactable");
                     raycastHit.collider.gameObject.GetComponent<Interactable>().OnTap();
                     return;
                 }
@@ -114,6 +121,8 @@ public class TapDetection : MonoBehaviour
                 EventManager.SetData("JUNCTION_TAPPED", next_junction);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
                 return;
+            }else{
+                IOSdebug("next junction is null");
             }
                 
         }
