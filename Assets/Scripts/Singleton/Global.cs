@@ -6,7 +6,7 @@ public class Global : MonoSingleton<Global>
 {
     // Start is called before the first frame update
     public Tracks tracks_object;
-
+    public GameManager gameManager;
     public AbstractTrack last_inspected_track;
     public GameObject train_head;
     void Start()

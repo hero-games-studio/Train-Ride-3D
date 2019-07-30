@@ -19,6 +19,10 @@ public abstract class AbstractTrack : MonoBehaviour
     abstract public float get_miny();
     abstract public float get_maxy();
 
+    protected static Vector4 jc_queued = new Vector4(0.47f,0.37f,0.81f,1)*255;
+    protected static Vector4 jc_passive = new Vector4(107,108,100,255);
+    protected static Vector4 jc_active = new Vector4(255,4,4,255);
+
     virtual public bool usable_junction(){
         return false;
     }
@@ -37,5 +41,9 @@ public abstract class AbstractTrack : MonoBehaviour
 
     virtual public Vector3 GetCenter(){
         return this.gameObject.transform.position + new Vector3(0,0,2.5f);
+    }
+
+    virtual public void TagNextJunction(){
+
     }
 }

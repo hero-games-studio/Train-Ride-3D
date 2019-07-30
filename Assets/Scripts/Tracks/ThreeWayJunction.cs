@@ -5,18 +5,15 @@ using UnityEngine;
 public class ThreeWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
-    private int _picked_dir;
+    public int _picked_dir = 1;
 
     private bool locked = false;
+    private bool active = false;
     
-    private bool rotated = false;
     public PathSpline leftpath;
     public PathSpline middlepath;
     public PathSpline rightpath;
 
-    public PathSpline leftpath_reverse;
-    public PathSpline middlepath_reverse;
-    public PathSpline rightpath_reverse;
     void Start()
     {
         CalculateNextTrack();
@@ -30,14 +27,6 @@ public class ThreeWayJunction : AbstractTrack
             leftpath.AddNode(newnode);
         }
 
-        leftpath_reverse = new PathSpline();
-        for (int i = leftpathobj.childCount-1; i > -1; i--)
-        {   
-            Transform child = leftpathobj.Find("p"+i);
-            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
-            leftpath_reverse.AddNode(newnode);
-        }
-
         middlepath = new PathSpline();
         Transform middlepathobj = transform.Find("MiddlePath");
         for (int i = 0; i < middlepathobj.childCount; i++)
@@ -47,13 +36,6 @@ public class ThreeWayJunction : AbstractTrack
             middlepath.AddNode(newnode);
         }
 
-        middlepath_reverse = new PathSpline();
-        for (int i = middlepathobj.childCount-1; i > -1; i--)
-        {   
-            Transform child = middlepathobj.Find("p"+i);
-            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
-            middlepath_reverse.AddNode(newnode);
-        }
 
         rightpath = new PathSpline();
         Transform rightpathobj = transform.Find("RightPath");
@@ -64,20 +46,7 @@ public class ThreeWayJunction : AbstractTrack
             rightpath.AddNode(newnode);
         }
 
-        rightpath_reverse = new PathSpline();
-        for (int i = rightpathobj.childCount-1; i > -1; i--)
-        {   
-            Transform child = rightpathobj.Find("p"+i);
-            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
-            rightpath_reverse.AddNode(newnode);
-        }
 
-        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
-            rotated = true;
-            lock_track();
-        }
-
-        _picked_dir = 1;
         update_visual();
     }
 
@@ -88,16 +57,6 @@ public class ThreeWayJunction : AbstractTrack
     }
 
     override public PathSpline GetPath(){
-        if(rotated){
-            GameObject tr_head = GameObject.FindGameObjectWithTag("TrainHead");
-            if(tr_head.transform.position.x-transform.position.x < -0.1f){
-                return rightpath_reverse;
-            }else if(tr_head.transform.position.x-transform.position.x > 0.1f){
-                return leftpath_reverse;
-            }else{
-                return middlepath_reverse;
-            }
-        }
         print("GET PATH DIR: "+_picked_dir);
         if(_picked_dir<0){
             return leftpath;
@@ -121,15 +80,39 @@ public class ThreeWayJunction : AbstractTrack
 
     private void update_visual(){
         if(locked){
-            transform.Find("LeftVisual").gameObject.SetActive(false);
-            transform.Find("MiddleVisual").gameObject.SetActive(false);
-            transform.Find("RightVisual").gameObject.SetActive(false);
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             return;
         }
-    
+        Vector4 active_color;
+        if(active){
+            active_color = AbstractTrack.jc_active;
+        } else {
+            active_color = AbstractTrack.jc_queued;
+        }
+
         transform.Find("LeftVisual").gameObject.SetActive(_picked_dir == -1);
         transform.Find("MiddleVisual").gameObject.SetActive(_picked_dir == 0);
         transform.Find("RightVisual").gameObject.SetActive(_picked_dir == 1);
+
+        if(_picked_dir == -1){
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+        } else if(_picked_dir == 0){
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+        } else {
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+        }
+
+
+    
+        
     }
 
     private void update_direction(int dir){
@@ -148,9 +131,6 @@ public class ThreeWayJunction : AbstractTrack
     }
 
     override public bool usable_junction(){
-        if(rotated){
-            return false;
-        }
         return true;
     }
     override public void toggle_direction(){
@@ -171,6 +151,11 @@ public class ThreeWayJunction : AbstractTrack
         update_visual();
     }
 
+    override public void TagNextJunction(){
+        active = true;
+        update_visual();
+    }
+
     override public int GetOffset(){
         return (_picked_dir);
     }
@@ -185,9 +170,6 @@ public class ThreeWayJunction : AbstractTrack
 
 
     override public Vector3 GetCenter(){
-        if(rotated){
-            return this.gameObject.transform.position + new Vector3(0,0,-2.5f);
-        }
         return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
 }

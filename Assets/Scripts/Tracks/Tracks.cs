@@ -115,7 +115,6 @@ public class Tracks : MonoBehaviour
             count++;
             controller.AddPath(picked_track.GetPath());
             picked_track.lock_track();
-            print(picked_track.gameObject.name);
 
             Global.Instance.last_inspected_track = picked_track;
             picked_track = picked_track.GetNextTrack();

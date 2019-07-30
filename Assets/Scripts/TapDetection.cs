@@ -37,6 +37,7 @@ public class TapDetection : MonoBehaviour
             }
         }
         next_junction = picked_track;
+        next_junction.TagNextJunction();
     }
     public static void UpdateNextJunction(AbstractTrack track){
         Tracks tracks_obj = Global.Instance.tracks_object;
@@ -57,6 +58,8 @@ public class TapDetection : MonoBehaviour
             }
         }
         next_junction = picked_track;
+        
+        next_junction.TagNextJunction();
     }
 
     private static void ClickMethod()
@@ -76,13 +79,16 @@ public class TapDetection : MonoBehaviour
                 }
                 else*/ if (raycastHit.collider.CompareTag("Rocks")){
                     raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
+                    return;
                 }else if (raycastHit.collider.CompareTag("Bush")){
                     raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
+                    return;
                 } 
             }
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
+                return;
             }
         }
 
@@ -102,13 +108,16 @@ public class TapDetection : MonoBehaviour
                     EventManager.EmitEvent("JUNCTION_TAPPED");
                 }else*/ if (raycastHit.collider.CompareTag("Rocks")){
                     raycastHit.collider.gameObject.GetComponent<Rocks>().OnTap();
+                    return;
                 }else if (raycastHit.collider.CompareTag("Bush")){
                     raycastHit.collider.gameObject.GetComponent<Bushes>().OnTap();
+                    return;
                 }
             }
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
+                return;
             }
                 
         }

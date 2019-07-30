@@ -57,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3f159ac4438c98442bb8c58138a8ee72, type: 2}
+  - {fileID: 2100000, guid: 021c6e67bbf2e6b46842ae1ec9f058ef, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1099,7 +1099,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3f159ac4438c98442bb8c58138a8ee72, type: 2}
+  - {fileID: 2100000, guid: 021c6e67bbf2e6b46842ae1ec9f058ef, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1284,7 +1284,6 @@ GameObject:
   - component: {fileID: 529739237221103923}
   - component: {fileID: 4885284136876390879}
   - component: {fileID: 5776502628688416441}
-  - component: {fileID: 1975713782515022376}
   m_Layer: 0
   m_Name: Junction
   m_TagString: Junction
@@ -1336,25 +1335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed257d6677902648860d0d400a0eebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!95 &1975713782515022376
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5336792471691507744}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f8e8442abd84d9448abd510704c5c26c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  _picked_dir: 0
 --- !u!1 &5929187000617198821
 GameObject:
   m_ObjectHideFlags: 0

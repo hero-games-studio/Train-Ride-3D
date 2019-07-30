@@ -6,13 +6,12 @@ public class TwoWayJunction : AbstractTrack
     // Start is called before the first frame update
     public int _picked_dir;
 
-    private bool rotated = false;
     private bool locked = false;
+
+    private bool active = false;
     public PathSpline leftpath;
     public PathSpline rightpath;
 
-    public PathSpline leftpath_reverse;
-    public PathSpline rightpath_reverse;
     void Start()
     {
         CalculateNextTrack();
@@ -26,14 +25,6 @@ public class TwoWayJunction : AbstractTrack
             leftpath.AddNode(newnode);
         }
 
-        leftpath_reverse = new PathSpline();
-        for (int i = leftpathobj.childCount-1; i > -1; i--)
-        {   
-            Transform child = leftpathobj.Find("p"+i);
-            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
-            leftpath_reverse.AddNode(newnode);
-        }
-
         rightpath = new PathSpline();
         Transform rightpathobj = transform.Find("RightPath");
         for (int i = 0; i < rightpathobj.childCount; i++)
@@ -43,21 +34,12 @@ public class TwoWayJunction : AbstractTrack
             rightpath.AddNode(newnode);
         }
 
-        rightpath_reverse = new PathSpline();
-        for (int i = rightpathobj.childCount-1; i > -1; i--)
-        {   
-            Transform child = rightpathobj.Find("p"+i);
-            PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
-            rightpath_reverse.AddNode(newnode);
-        }
 
-        if(Mathf.RoundToInt(transform.eulerAngles.y) == 180){
-            rotated = true;
-            lock_track();
-        }
 
         update_visual();
     }
+
+    
 
     // Update is called once per frame
     void Update()
@@ -66,9 +48,6 @@ public class TwoWayJunction : AbstractTrack
     }
 
     override public bool usable_junction(){
-        if(rotated){
-            return false;
-        }
         return true;
     }
 
@@ -91,16 +70,30 @@ public class TwoWayJunction : AbstractTrack
 
     private void update_visual(){
         if(locked){
-            transform.Find("LeftVisual").gameObject.SetActive(false);
-            transform.Find("RightVisual").gameObject.SetActive(false);
+            //transform.Find("LeftVisual").gameObject.SetActive(true);
+            //transform.Find("RightVisual").gameObject.SetActive(true);
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             return;
         }
-        bool picked = false;
-        if(_picked_dir == -1){
-            picked = true;
+        Vector4 active_color;
+        if(active){
+            active_color = AbstractTrack.jc_active;
+        } else {
+            active_color = AbstractTrack.jc_queued;
         }
-        transform.Find("LeftVisual").gameObject.SetActive(picked);
-        transform.Find("RightVisual").gameObject.SetActive(!picked);
+
+        if(_picked_dir == -1){
+            transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("LeftVisual").gameObject.SetActive(true);
+            transform.Find("RightVisual").gameObject.SetActive(false);
+            //transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+        } else {
+            transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("LeftVisual").gameObject.SetActive(false);
+            transform.Find("RightVisual").gameObject.SetActive(true);
+            //transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+        }
     }
 
     private void update_direction(int dir){
@@ -124,18 +117,20 @@ public class TwoWayJunction : AbstractTrack
         }
     }
 
+    override public void TagNextJunction(){
+        active = true;
+        update_visual();
+    }
     override public void lock_track(){
         if(usable_junction()){
             TapDetection.UpdateNextJunction(this);
         }
         locked = true;
+        active = false;
         update_visual();
     }
 
     override public int GetOffset(){
-        if(rotated){
-            return 0;
-        }
         return _picked_dir;
     }
 
@@ -150,9 +145,6 @@ public class TwoWayJunction : AbstractTrack
  
 
     override public Vector3 GetCenter(){
-        if(rotated){
-            return this.gameObject.transform.position + new Vector3(0,0,-2.5f);
-        }
         return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
 }
