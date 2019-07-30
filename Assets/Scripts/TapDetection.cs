@@ -93,6 +93,7 @@ public class TapDetection : MonoBehaviour
     }
     private static void TouchMethod(TouchResult result)
     {
+        EventManager.EmitEvent("touch");
         if (result.touch.phase == TouchPhase.Began)
         {
             Ray raycast = Camera.main.ScreenPointToRay(result.touch.position);
