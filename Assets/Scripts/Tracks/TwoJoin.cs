@@ -42,12 +42,27 @@ public class TwoJoin : AbstractTrack
   
 
     override public PathSpline GetPath(){
-        GameObject tr_head = Global.Instance.last_inspected_track.gameObject;
-         if(tr_head.transform.position.x<transform.position.x){
-            return leftpath;
-        }else{
+        GameObject last_obj = Global.Instance.last_inspected_track.gameObject;
+        
+        AbstractTrack last_track = last_obj.GetComponent<AbstractTrack>();
+        if(last_track == null){
             return rightpath;
         }
+
+        if(last_obj.transform.position.x - transform.position.x < -1f){
+            return leftpath;
+        }else if(last_obj.transform.position.x - transform.position.x > 1f){
+            return rightpath;
+        }else{
+            if(last_track.usable_junction()){
+                if(last_track.GetOffset() <0){
+                    return leftpath;
+                }else{
+                    return rightpath;
+                }
+            }
+        }
+        return rightpath;
     }
 
     override public PathSpline GetPathDir(int dir){

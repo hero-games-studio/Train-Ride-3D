@@ -84,6 +84,10 @@ public class TapDetection : MonoBehaviour
                     return;
                 }
             }
+            if(Global.Instance.WaitingForTap){
+                EventManager.EmitEvent("TrainStart");
+                Global.Instance.WaitingForTap = false;
+            }
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
@@ -124,6 +128,10 @@ public class TapDetection : MonoBehaviour
                 return;
             }else{
                 IOSdebug("next junction is null");
+            }
+            if(Global.Instance.WaitingForTap){
+                EventManager.EmitEvent("TrainStart");
+                Global.Instance.WaitingForTap = false;
             }
                 
         }

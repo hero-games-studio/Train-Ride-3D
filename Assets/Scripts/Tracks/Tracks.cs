@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TigerForge;
 public class Tracks : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    //video
+    public GameObject middle_end;
+    //
     public GameObject starting_track;
+    public GameObject end_track;
 
     private List<GameObject> track_array = new List<GameObject>();
 
@@ -16,6 +21,7 @@ public class Tracks : MonoBehaviour
     }
     void Start()
     {
+        EventManager.StartListening("TrainStart",CancelMiddle);
         for (int i = 0; i < transform.childCount; i++)
         {
             track_array.Add(transform.GetChild(i).gameObject);
@@ -128,5 +134,25 @@ public class Tracks : MonoBehaviour
             }
         }
         
+    }
+    bool active = true;
+    public float GetSpeedMultiplier(GameObject train_head){
+        float diff1 = train_head.gameObject.transform.position.z - middle_end.transform.position.z;
+        float diff2 = train_head.gameObject.transform.position.z - end_track.transform.position.z;
+        float diff = Mathf.Min(Mathf.Abs(diff1),Mathf.Abs(diff2));
+        if(Mathf.Abs(diff) < 0.1f && active){
+            Global.Instance.WaitingForTap = true;
+            return 0;
+        }
+        if(Mathf.Abs(diff) < 7){
+            return 0.1f+Mathf.Abs(diff)/8;
+        }else{
+            active = true;
+        }
+        return 1f;
+    }
+
+    public void CancelMiddle(){
+        active = false;
     }
 }

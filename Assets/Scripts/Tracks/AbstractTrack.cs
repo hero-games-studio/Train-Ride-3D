@@ -36,6 +36,7 @@ public abstract class AbstractTrack : MonoBehaviour
         return false;
     }
 
+
     virtual public float GetYOffset(){
         return 6f;
     }

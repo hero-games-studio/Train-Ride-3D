@@ -6,7 +6,7 @@ public abstract class HonkAffectee : MonoBehaviour
 {
     // Start is called before the first frame update
     protected GameObject train_head;
-    private float range = 13f;
+    private float range = 10f;
     void Start()
     {
         EventManager.StartListening("Honk",AbstractHonk);

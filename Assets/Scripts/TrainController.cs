@@ -34,7 +34,7 @@ public class TrainController : MonoBehaviour
 
         train_head = Instantiate(train_head_prefab);
         Global.Instance.train_head = train_head;
-        distance_travelled = 0;
+        distance_travelled = 5;
         for (int i = 0; i < carriage_count; i++)
         {
             GameObject new_carriage = Instantiate(carriage_prefab);
@@ -112,11 +112,11 @@ public class TrainController : MonoBehaviour
         if(_CRASHED){
             return;
         }
-        if(Time.realtimeSinceStartup<5){
-            return;
+        if(Time.realtimeSinceStartup>5){
+            distance_travelled += CalculateCurrentSpeed() * Time.deltaTime * tracks_object.GetSpeedMultiplier(train_head);
         }
 
-        distance_travelled += CalculateCurrentSpeed() * Time.deltaTime;
+        //distance_travelled += CalculateCurrentSpeed() * Time.deltaTime;
         /*
         while(track_list.Count != 0){
             AbstractTrack last_track = track_list.Dequeue();

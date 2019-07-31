@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4564769399952330972}
   - component: {fileID: 1283585597751136681}
   - component: {fileID: 2153741918977207821}
+  - component: {fileID: 2851708874449704729}
   m_Layer: 0
   m_Name: Cow
   m_TagString: Untagged
@@ -58,6 +59,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fec28c081681d5643ba61b3262c9e2f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2851708874449704729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230521058004225936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6250bd7864346bf4ca3e2c289e5e0120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collision_tag: rock
 --- !u!1 &5941112430234541945
 GameObject:
   m_ObjectHideFlags: 0

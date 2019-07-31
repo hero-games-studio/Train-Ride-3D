@@ -108,7 +108,6 @@ public class TwoWayJunction : AbstractTrack
         update_visual();
     }
     override public void toggle_direction(){
-        print("dir: "+_picked_dir);
         if(_picked_dir == -1){
             update_direction(1);
         }else{

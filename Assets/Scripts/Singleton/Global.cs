@@ -9,6 +9,8 @@ public class Global : MonoSingleton<Global>
     public GameManager gameManager;
     public AbstractTrack last_inspected_track;
     public GameObject train_head;
+
+    public bool WaitingForTap = false;
     void Start()
     {
         
