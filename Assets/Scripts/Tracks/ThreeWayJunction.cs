@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using TigerForge;
 
 public class ThreeWayJunction : AbstractTrack
 {
@@ -49,6 +50,10 @@ public class ThreeWayJunction : AbstractTrack
         System.Random rand = new System.Random();
         _picked_dir = rand.Next(0,3) - 1;
         update_visual();
+
+        EventManager.StartListening("SwipeRight",swiperight);
+        EventManager.StartListening("SwipeUp",swipeup);
+        EventManager.StartListening("SwipeLeft",swipeleft);
     }
 
     // Update is called once per frame
@@ -80,6 +85,9 @@ public class ThreeWayJunction : AbstractTrack
 
     private void update_visual(){
         if(locked){
+            transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").Find("MiddleVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
@@ -100,14 +108,23 @@ public class ThreeWayJunction : AbstractTrack
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("MiddleVisual").Find("MiddleVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
         } else if(_picked_dir == 0){
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").Find("MiddleVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
         } else {
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
+            transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("MiddleVisual").Find("MiddleVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
         }
 
 
@@ -129,6 +146,22 @@ public class ThreeWayJunction : AbstractTrack
         update_visual();
     }
 
+    public void swiperight(){
+        if(usable_junction() && active){
+            update_direction(1);
+        }
+    }
+
+    public void swipeup(){
+        if(usable_junction() && active){
+            update_direction(0);
+        }
+    }
+    public void swipeleft(){
+        if(usable_junction() && active){
+            update_direction(-1);
+        }
+    }
     override public bool usable_junction(){
         return true;
     }

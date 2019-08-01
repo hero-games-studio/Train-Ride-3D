@@ -5,8 +5,27 @@ using TigerForge;
 
 public class TrainController : MonoBehaviour
 {
-    private bool _CRASHED = false;
     public int framerate_target = 60;
+
+    //------//
+    [Header("Train settings")]
+    public int carriage_count = 2;
+    public float max_train_speed = 5;
+    public float seperation = 1.4f;
+
+    private PathSpline traverser_path = new PathSpline();
+
+    
+    [Header("References")]
+    public Tracks tracks_object;
+
+    [Header("Prefabs")]
+    public GameObject train_head_prefab;
+    public GameObject carriage_prefab;
+
+
+
+    private bool _CRASHED = false;
     private GameObject train_head;
 
     public GameObject get_train_head{
@@ -16,17 +35,6 @@ public class TrainController : MonoBehaviour
     }
     private CameraController camera_controller;
     private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
-    //------//
-    public int carriage_count = 2;
-    public float max_train_speed = 5;
-    public GameObject train_head_prefab;
-    public GameObject carriage_prefab;
-
-    private PathSpline traverser_path = new PathSpline();
-
-    public Tracks tracks_object;
-
-
     // Start is called before the first frame update
 
     void InitializeTrain(){
@@ -104,16 +112,18 @@ public class TrainController : MonoBehaviour
         }
         //paused = false;
     }
-    public float seperation = 1.4f;
+
     private int count = 0;
 
     private Vector3 _up = new Vector3(0,1,0);
     void Update() {
         if(_CRASHED){
-            return;
+            //return;
         }
-        if(Time.realtimeSinceStartup>5){
-            distance_travelled += CalculateCurrentSpeed() * Time.deltaTime * tracks_object.GetSpeedMultiplier(train_head);
+        if(Time.realtimeSinceStartup>5 && !_CRASHED){
+            float calc_speed = CalculateCurrentSpeed() * tracks_object.GetSpeedMultiplier(train_head);
+            Global.Instance.train_speed = calc_speed;
+            distance_travelled += calc_speed * Time.deltaTime;
         }
 
         //distance_travelled += CalculateCurrentSpeed() * Time.deltaTime;
@@ -123,7 +133,7 @@ public class TrainController : MonoBehaviour
             print("adding " + last_track.gameObject.name);
             AddPath(last_track.GetPath());
         }*/
-        if(traverser_path.totalLength - distance_travelled < 2f){
+        if(traverser_path.totalLength - distance_travelled < 1.4f){
             tracks_object.RequestPath(this);
 
             //AbstractTrack nexttrack = tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1));
@@ -175,17 +185,18 @@ public class TrainController : MonoBehaviour
        return (Mathf.Exp(t) - Mathf.Exp(-t))/(Mathf.Exp(t) + Mathf.Exp(-t));
     }
 
-    private int curve = 13;
+    private int curve = 65;
     private float min_speed = 2;
+    private float ratio = 0.7f;
     private float CalculateCurrentSpeed(){
         float train_y = train_head.transform.position.z - min_y;
         if(total_y < -15000 || total_y >15000){
             CalculateTotalY();
         }
-        if(train_y <= min_y + total_y/2){
-            return min_speed + ((max_train_speed-min_speed)*tanh(train_y/curve)*tanh(train_y/curve));
+        if(train_y <= min_y + total_y*ratio){
+            return min_speed + ((max_train_speed-min_speed)*tanh(train_y/(curve*ratio))*tanh(train_y/(curve*ratio)));
         }else{
-            return min_speed + ((max_train_speed-min_speed)*tanh((total_y - train_y)/curve)*tanh((total_y - train_y)/curve));
+            return min_speed + ((max_train_speed-min_speed)*tanh((total_y - train_y)/(curve*(1-ratio)))*tanh((total_y - train_y)/(curve*(1-ratio))));
         }
     }
 

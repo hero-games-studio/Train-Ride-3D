@@ -9,7 +9,7 @@ public class Honk : Interactable
     // Start is called before the first frame update
     void Start()
     {
-        
+        EventManager.StartListening("DoubleTap",OnTap);
     }
 
     float start_time = 0;
@@ -30,6 +30,9 @@ public class Honk : Interactable
     }
 
     override public void OnTap(){
+        if(active){
+            return;
+        }
         print("tapped");
         EventManager.SetData("Honk",gameObject);
         EventManager.EmitEvent("Honk");

@@ -10,13 +10,14 @@ public class TapDetection : MonoBehaviour
     {
         Input.simulateMouseWithTouches = false;
         UpdateNextJunction();
-        gameObject.GetComponent<TouchController>().addBehaviour(TouchPhase.Began,TouchMethod); 
+        gameObject.GetComponent<TouchController>().addBehaviour(TouchPhase.Began,TouchMethod);
+
     }
 
     void Update()
     {
         #if UNITY_EDITOR
-        ClickMethod();
+        //ClickMethod();
         #endif 
 
         //#if UNITY_IOS
@@ -88,6 +89,7 @@ public class TapDetection : MonoBehaviour
                 EventManager.EmitEvent("TrainStart");
                 Global.Instance.WaitingForTap = false;
             }
+            return;
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
                 EventManager.EmitEvent("JUNCTION_TAPPED");
@@ -116,16 +118,17 @@ public class TapDetection : MonoBehaviour
                 {
                     EventManager.SetData("JUNCTION_TAPPED", raycastHit.collider.gameObject);
                     EventManager.EmitEvent("JUNCTION_TAPPED");
-                }else*/ if (raycastHit.collider.CompareTag("Interactable")){
+                }elseif (raycastHit.collider.CompareTag("Interactable")){
                     IOSdebug("tapped on interactable");
                     raycastHit.collider.gameObject.GetComponent<Interactable>().OnTap();
                     return;
-                }
+                }*/
             }
             if(Global.Instance.WaitingForTap){
                 EventManager.EmitEvent("TrainStart");
                 Global.Instance.WaitingForTap = false;
             }
+            return;
             if(next_junction!=null){
                 EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
                 EventManager.EmitEvent("JUNCTION_TAPPED");

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1283585597751136681}
   - component: {fileID: 2153741918977207821}
   - component: {fileID: 2851708874449704729}
+  - component: {fileID: 313540533579425886}
   m_Layer: 0
   m_Name: Cow
   m_TagString: Untagged
@@ -72,6 +73,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collision_tag: rock
+--- !u!95 &313540533579425886
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230521058004225936}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1ecf5f0ea61ab245816818f8b7dd114, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5941112430234541945
 GameObject:
   m_ObjectHideFlags: 0

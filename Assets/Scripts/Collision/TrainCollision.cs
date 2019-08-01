@@ -21,14 +21,28 @@ public class TrainCollision : MonoBehaviour
         
     }
 
+    private string GetTag(GameObject obj){
+        Component[] collisions;
+
+        collisions = obj.GetComponents(typeof(CollisionSignal));
+
+        if(collisions.Length > 0){
+            return obj.GetComponent<CollisionSignal>().collision_tag;
+        }else{
+            return "";
+        }
+    }
+
     private void Collision(){
         GameObject[] data = EventManager.GetData("Collision") as GameObject[];
         if(data[1] == trainhead){ //other object hit trainhead
-            if(data[0].GetComponent<CollisionSignal>().collision_tag == "rock"){
+            string tag = GetTag(data[0]);
+            if(tag == "rock"){
                 controller.Crash();
             }
-            if(data[0].GetComponent<CollisionSignal>().collision_tag == "coin"){
-                Destroy(data[0]);
+            if(tag == "coin"){
+                //Destroy(data[0]);
+                data[0].SetActive(false);
                 EventManager.EmitEvent("CoinCollected");
             }
         }
