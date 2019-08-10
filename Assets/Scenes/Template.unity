@@ -434,7 +434,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 4.5e-44, y: 0, z: 1.39e-43, w: 0.03125}
+  m_BoundingSphereOverride: {x: 1.3e-44, y: 0, z: 1.7e-43, w: 0.0625}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1877,22 +1877,22 @@ MonoBehaviour:
   - tag: s_low1
     prefab: {fileID: 8431167311780368215, guid: 6e123bcc1d3dee24ea543c6ef5c8f784,
       type: 3}
-    size: 3
+    size: 10
     complexity: 1
   - tag: s_low2
     prefab: {fileID: 4559517219799985002, guid: 352a8db6a8e7e574c9b2d26dc1611f54,
       type: 3}
-    size: 3
+    size: 10
     complexity: 1
   - tag: s_mid1
     prefab: {fileID: 5824186324996544772, guid: 2c638402368ff8341900be79deb508c8,
       type: 3}
-    size: 3
+    size: 10
     complexity: 2
   - tag: s_mid2
     prefab: {fileID: 8781502594610200684, guid: 8fe887eba00bdd442bd9fbf8689cff1f,
       type: 3}
-    size: 3
+    size: 10
     complexity: 2
   - tag: station
     prefab: {fileID: 7460390009334863588, guid: 1bbab76a50468b34380131b53dac103a,

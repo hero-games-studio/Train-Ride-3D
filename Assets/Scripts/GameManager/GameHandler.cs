@@ -13,7 +13,7 @@ public class GameHandler : MonoBehaviour
     {
         Input.simulateMouseWithTouches = false;
         PlayerPrefs.SetInt("coins",0);
-        UpdateNextJunction();
+        //UpdateNextJunction();
 
         EventManager.StartListening("CoinCollected",AddCoin);
         EventManager.StartListening("Tap",OnTap);
@@ -26,6 +26,8 @@ public class GameHandler : MonoBehaviour
     }
 
     private static AbstractTrack next_junction;
+
+    /*
     public static void UpdateNextJunction(){
         int tracker = 0;
         Tracks tracks_obj = Global.Instance.tracks_object;
@@ -47,6 +49,10 @@ public class GameHandler : MonoBehaviour
         next_junction = picked_track;
         next_junction.TagNextJunction();
     }
+
+    */
+
+    /*
     public static void UpdateNextJunction(AbstractTrack track){
         Tracks tracks_obj = Global.Instance.tracks_object;
         Vector3 initial_pos = Global.Instance.train_head.transform.position;
@@ -69,6 +75,8 @@ public class GameHandler : MonoBehaviour
         
         next_junction.TagNextJunction();
     }
+
+    */
 
 
     public void AddCoin(){

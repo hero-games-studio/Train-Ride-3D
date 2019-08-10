@@ -9,6 +9,7 @@ public class Segment : MonoBehaviour
     [SerializeField] public AbstractTrack significant_track;
     [SerializeField] public AbstractTrack first_track;
     public bool is_station;
+    public Global.Level currently_in_level;
     void Start()
     {
         
@@ -42,6 +43,7 @@ public class Segment : MonoBehaviour
             for (int k = 0; k < coins.childCount; k++)
             {
                 coins.GetChild(k).gameObject.SetActive(true);
+                coins.GetChild(k).GetComponent<Coin>().Reset();
             }
 
             //reset cows to initial pos

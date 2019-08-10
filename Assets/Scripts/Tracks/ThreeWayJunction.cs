@@ -114,7 +114,6 @@ public class ThreeWayJunction : AbstractTrack
         
         transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetVector("_Color",active_color/255);
         transform.Find("VisualDir").gameObject.GetComponent<Animator>().SetInteger("dir",_picked_dir);
-        print(_picked_dir);
         if(_picked_dir == -1){
             
             /*
@@ -193,7 +192,8 @@ public class ThreeWayJunction : AbstractTrack
 
     override public void lock_track(){
         if(usable_junction()){
-            GameHandler.UpdateNextJunction(this);
+            Global.Instance.ActivateNextJunction();
+            //GameHandler.UpdateNextJunction(this);
         }
         locked = true;
         update_visual();
@@ -225,4 +225,17 @@ public class ThreeWayJunction : AbstractTrack
     override public Vector3 GetCenter(){
         return this.gameObject.transform.position + new Vector3(0,0,2.5f);
     }
+
+    override public Vector3 GetEndPoint(){
+        switch(_picked_dir){
+            case -1:
+                return end_of_track[0].transform.position;
+            case 0:
+                return end_of_track[1].transform.position;
+            case 1:
+                return end_of_track[2].transform.position;
+        }
+        return transform.position;
+    }
+
 }

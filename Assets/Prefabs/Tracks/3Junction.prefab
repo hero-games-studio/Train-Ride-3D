@@ -822,14 +822,15 @@ GameObject:
   m_Component:
   - component: {fileID: 4826604678613209098}
   - component: {fileID: 5395412751668520208}
-  - component: {fileID: 4451579625626060408}
   - component: {fileID: 8881899900865354932}
+  - component: {fileID: 5126731043244183052}
+  - component: {fileID: 7518455237874391862}
   m_Layer: 0
   m_Name: 3Junction
   m_TagString: Junction
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4826604678613209098
 Transform:
@@ -865,19 +866,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c312a646b58ed44d8252ed6fed75dd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!135 &4451579625626060408
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3000245820260781508}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 4
-  m_Center: {x: 0, y: 0, z: 1.86}
+  start_of_track:
+  - {fileID: 6457751710986036570}
+  end_of_track:
+  - {fileID: 4344127454222218467}
+  - {fileID: 2339090413293629041}
+  - {fileID: 7290473870136673672}
 --- !u!82 &8881899900865354932
 AudioSource:
   m_ObjectHideFlags: 0
@@ -975,6 +969,32 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &5126731043244183052
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3000245820260781508}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.06, y: 1, z: 5.5538588}
+  m_Center: {x: 0, y: 0, z: 2.2769294}
+--- !u!65 &7518455237874391862
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3000245820260781508}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 8.36, y: 1, z: 2.4918568}
+  m_Center: {x: 0, y: 0, z: 3.8079305}
 --- !u!1 &3480323236488438324
 GameObject:
   m_ObjectHideFlags: 0

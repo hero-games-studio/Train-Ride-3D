@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5872353335013338615}
   - component: {fileID: 266457846722393230}
   - component: {fileID: 5911255139604087769}
-  - component: {fileID: 7081380320864412064}
   m_Layer: 0
   m_Name: Obj
   m_TagString: Untagged
@@ -78,19 +77,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &7081380320864412064
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 493289866347156738}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2685250750717953864
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,12 +179,13 @@ GameObject:
   m_Component:
   - component: {fileID: 6184076609094125353}
   - component: {fileID: 4966398274013978302}
+  - component: {fileID: 5620477894462443455}
   m_Layer: 0
   m_Name: StraightRoad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &6184076609094125353
 Transform:
@@ -228,3 +215,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c4e61bb515700e48a9288e0b6bce80e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  start_of_track:
+  - {fileID: 2685250750717953864}
+  end_of_track:
+  - {fileID: 4984342724345860739}
+  offset: 0
+--- !u!65 &5620477894462443455
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8779314427251912057}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.43, y: 1.54, z: 5.567751}
+  m_Center: {x: 0, y: 0, z: 2.2838755}

@@ -23,6 +23,8 @@ public class SegmentManager : MonoBehaviour
         //train_controller_object.AddPath(tracks_object.GetNextTrack().GetPath());
         //tracks_object.RequestPath(train_controller_object,st1.GetFirstTrack());
         train_controller_object.AddSegment(st1);
+        tracks_object.RequestPath(train_controller_object);
+        Global.Instance.ActivateNextJunction();
         EventManager.EmitEvent("Activate_Train");
         EventManager.StartListening("LevelFinished",GenerateLevel);
         Global.Instance.UpdateUIForLevel();
@@ -35,6 +37,7 @@ public class SegmentManager : MonoBehaviour
         level++;
         Global.Level new_level = new Global.Level();
         new_level.number = level;
+        //new_level.level_completed = false;
         next_complexity = 2;
         
         int segment_count = 3; //(level/4 + 1) + rand.Next(-1,2);
@@ -44,7 +47,9 @@ public class SegmentManager : MonoBehaviour
         
         for (int i = 0; i < segment_count; i++)
         {
-            SpawnNextSegment();
+            Segment seg = SpawnNextSegment();
+            //seg.currently_in_level = new_level;
+            //new_level.segments_in_level.Add(seg);
         }
         
         //SpawnNextSegment();
@@ -64,7 +69,7 @@ public class SegmentManager : MonoBehaviour
         GenerateCows(new_level.start_station,new_level.end_station);
         
         tracks_object.UpdateArrays();
-        GameHandler.UpdateNextJunction();
+        //GameHandler.UpdateNextJunction();
         Global.Instance.AddLevel(new_level);
     }
 
@@ -140,7 +145,7 @@ public class SegmentManager : MonoBehaviour
         GameObject obj = ObjectPool.Instance.SpawnFromPool("tree");
         obj.transform.localScale = new Vector3(0.3f,0.3f + rand.Next(-10,11)/200f,0.3f);
         obj.transform.position = new Vector3(x + rand.Next(-10,11)/15f,rand.Next(-30,0)/300f,y + rand.Next(-10,11)/15f);
-        obj.GetComponent<TreeModel>().Start();
+        obj.GetComponent<TreeModel>().Reset();
 
         obj.GetComponent<TreeModel>().SetTrunkColor(CalculateTrunkColor(obj.transform.position.z));
         obj.GetComponent<TreeModel>().SetLeavesColor(CalculateLeavesColor(obj.transform.position.z));
@@ -154,6 +159,7 @@ public class SegmentManager : MonoBehaviour
 
     private Segment SpawnSegment(string tag){
         Segment new_segment = ObjectPool.Instance.SpawnFromPool(tag).GetComponent<Segment>();
+        
         new_segment.gameObject.transform.SetParent(tracks_object.transform);
         Vector2 start_offset = new_segment.get_start_offset();
         Vector2 end_offset = new_segment.get_end_offset();
@@ -192,9 +198,10 @@ public class SegmentManager : MonoBehaviour
         return tag;
     }
 
-    private void SpawnNextSegment(){
+    private Segment SpawnNextSegment(){
         string tag = CalculateNextTag();
-        SpawnSegment(tag);
+        Segment seg = SpawnSegment(tag);
+        return seg;
     }
 
     private Vector3 ToWorld(Vector2 vec){

@@ -6,6 +6,8 @@ using TigerForge;
 public abstract class AbstractTrack : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] protected List<GameObject> start_of_track;
+    [SerializeField] protected List<GameObject> end_of_track;
     void Start() {
         EventManager.StartListening("Crashed",lock_track);
         Init();
@@ -50,6 +52,7 @@ public abstract class AbstractTrack : MonoBehaviour
     }
 
     virtual public AbstractTrack GetNextTrack(){
+        CalculateNextTrack();
         return next_track;
     }
 
@@ -66,5 +69,31 @@ public abstract class AbstractTrack : MonoBehaviour
     virtual public void ResetTrack(){
         RemakePath();
         unlock_track();
+    }
+
+    public List<Vector3> getStartPoints(){
+        List<Vector3> new_list = new List<Vector3>();
+        foreach (GameObject item in start_of_track)
+        {
+            new_list.Add(item.transform.position);
+        }
+        return new_list;
+    }
+
+    public List<Vector3> getEndPoints(){
+        List<Vector3> new_list = new List<Vector3>();
+        foreach (GameObject item in end_of_track)
+        {
+            new_list.Add(item.transform.position);
+        }
+        return new_list;
+    }
+
+    virtual public Vector3 GetEndPoint(){
+        return end_of_track[0].transform.position;
+    }
+
+    virtual public Vector3 GetStartPoint(){
+        return start_of_track[0].transform.position;
     }
 }

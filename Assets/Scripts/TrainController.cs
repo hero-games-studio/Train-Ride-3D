@@ -101,10 +101,12 @@ public class TrainController : MonoBehaviour
     private Dictionary<GameObject,float> carriage_dist_travelled_map = new Dictionary<GameObject,float>();
 
 
-    public void AddPath(PathSpline path){
+    public void AddPath(AbstractTrack track){
         //paused = true;
         //path_queue.Add(path);
         //pos_map.Add(totalLength,path);
+        
+        PathSpline path = track.GetPath();
         LinkedList<KeyValuePair<float,PathNode>> list = new LinkedList<KeyValuePair<float,PathNode>>();
         if(path==null){
             return;
@@ -137,6 +139,7 @@ public class TrainController : MonoBehaviour
             traverser_path.AddNode(newnode);
         }
         //paused = false;
+        Global.Instance.last_inspected_track = track;
     }
 
     public void AddSegment(Segment seg){
@@ -144,7 +147,7 @@ public class TrainController : MonoBehaviour
 
         foreach (AbstractTrack item in list)
         {
-            AddPath(item.GetPath());
+            AddPath(item);
         }
     }
 
@@ -162,7 +165,7 @@ public class TrainController : MonoBehaviour
                 float diff = (train_head.transform.position - Global.Instance.current_level.end_station.significant_track.transform.position).magnitude;
                 float newspeed = Mathf.Clamp(max_train_speed - (slow_zone - diff)*max_train_speed/slow_zone,0,max_train_speed);
                 
-                if(newspeed<0.15f){
+                if(newspeed<0.3f){
                     newspeed = 0;
                 }
                 current_speed = newspeed;
@@ -230,7 +233,7 @@ public class TrainController : MonoBehaviour
             stopping = true;
         }
 
-        if(dist < slow_zone && current_speed < 0.03f){
+        if(dist < slow_zone*2 && current_speed < 0.03f){
             active = false;
             EventManager.EmitEvent("LevelFinished");
             at_station = true;

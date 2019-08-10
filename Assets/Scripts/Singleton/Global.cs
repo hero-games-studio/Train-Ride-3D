@@ -12,6 +12,10 @@ public class Global : MonoSingleton<Global>
         public Segment start_station;
         public Segment end_station;
 
+        public List<Segment> segments_in_level;
+
+        public bool level_completed;
+
     }
     [HideInInspector] public Tracks tracks_object;
     [HideInInspector] public TrainController train_controller;
@@ -31,6 +35,7 @@ public class Global : MonoSingleton<Global>
     }
 
     [HideInInspector] public Queue<Level> generated_levels;
+    [HideInInspector] public Queue<AbstractTrack> junction_queue = new Queue<AbstractTrack>();
     void Start()
     {
         EventManager.StartListening("Tap",onTap);
@@ -43,7 +48,8 @@ public class Global : MonoSingleton<Global>
     }
 
     public void LevelFinished(){
-        generated_levels.Dequeue();
+        Level level = generated_levels.Dequeue();
+        level.level_completed = true;
 
         UpdateUIForLevel();
     }
@@ -61,5 +67,11 @@ public class Global : MonoSingleton<Global>
 
     public void UpdateUIForLevel(){
         UpdateUIForLevel(current_level);
+    }
+
+    public void ActivateNextJunction(){
+        if(junction_queue.Count >0){
+            junction_queue.Dequeue().TagNextJunction();
+        }
     }
 }

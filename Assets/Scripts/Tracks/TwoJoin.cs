@@ -47,15 +47,21 @@ public class TwoJoin : AbstractTrack
 
     override public PathSpline GetPath(){
         GameObject last_obj = Global.Instance.last_inspected_track.gameObject;
+
+        //print("TwoJoin: last_track name: "+last_obj.name);
         
         AbstractTrack last_track = last_obj.GetComponent<AbstractTrack>();
         if(last_track == null){
             return rightpath;
         }
 
-        if(last_obj.transform.position.x - transform.position.x < -1f){
+
+        Vector3 twojoin_startpoint = GetStartPoint();
+
+
+        if(twojoin_startpoint.x - transform.position.x < -1f){
             return leftpath;
-        }else if(last_obj.transform.position.x - transform.position.x > 1f){
+        }else if(twojoin_startpoint.x - transform.position.x > 1f){
             return rightpath;
         }else{
             if(last_track.usable_junction()){
@@ -96,5 +102,17 @@ public class TwoJoin : AbstractTrack
 
     override public Vector3 GetCenter(){
         return this.gameObject.transform.position + new Vector3(0,0,2.5f);
+    }
+
+    override public Vector3 GetStartPoint(){
+        GameObject last_obj = Global.Instance.last_inspected_track.gameObject;
+        Vector3 last_pos = last_obj.GetComponent<AbstractTrack>().GetEndPoint();
+        Vector3 picked = start_of_track[0].transform.position;
+
+        if((start_of_track[1].transform.position - last_pos).magnitude < (picked - last_pos).magnitude ){
+            picked = start_of_track[1].transform.position;
+        }
+
+        return picked;
     }
 }

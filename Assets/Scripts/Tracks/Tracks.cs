@@ -56,20 +56,32 @@ public class Tracks : MonoBehaviour
         return Global.Instance.station_queue.Peek().GetFirstTrack();
     }
 
+    private Vector3 get_closest_point(Vector3 check_point, List<Vector3> list){
+        float dist = Mathf.Infinity;
+        Vector3 point = new Vector3();
+        foreach (Vector3 vec in list)
+        {
+            if((vec-check_point).magnitude<dist){
+                dist = (vec-check_point).magnitude;
+                point = vec;
+            }
+        }
+        return point;
+    }
+
     public AbstractTrack GetNextTrack(GameObject track){
-        float x_offset =  track.GetComponent<AbstractTrack>().GetOffset();
-        float z_offset = track.GetComponent<AbstractTrack>().GetYOffset();
-        Vector3 ref_pos = track.GetComponent<AbstractTrack>().GetCenter() + new Vector3(x_offset*3,0,z_offset);
+        Vector3 end_position = track.GetComponent<AbstractTrack>().GetEndPoint();
+
+        //float x_offset =  track.GetComponent<AbstractTrack>().GetOffset();
+        //float z_offset = track.GetComponent<AbstractTrack>().GetYOffset();
+        //Vector3 ref_pos = track.GetComponent<AbstractTrack>().GetCenter() + new Vector3(x_offset*3,0,z_offset);
 
         GameObject closest = track;
         float dist = Mathf.Infinity;
         foreach (GameObject track_object in track_array)
         {
-            float z_dist = -(track_object.transform.position.z - ref_pos.z);
-            float this_dist = (track_object.GetComponent<AbstractTrack>().GetCenter() - ref_pos).magnitude;
-            if(z_dist<0){
-                //continue;
-            }
+            Vector3 start_point_of_track = get_closest_point(end_position,track_object.GetComponent<AbstractTrack>().getStartPoints());
+            float this_dist = (start_point_of_track - end_position).magnitude;
             if(this_dist < dist){
                 dist = this_dist;
                 closest = track_object;
@@ -79,6 +91,7 @@ public class Tracks : MonoBehaviour
         return closest.GetComponent<AbstractTrack>();
     }
 
+    /*
     public AbstractTrack GetNextTrack(Vector3 pos){
         GameObject track = gameObject;
         float dist2 = Mathf.Infinity;
@@ -112,8 +125,8 @@ public class Tracks : MonoBehaviour
         float dist2 = Mathf.Infinity;
         foreach (GameObject track_object in track_array)
         {
-            float z_dist = -(track_object.transform.position.z - pos.z);
-            float this_dist = (track_object.transform.position - pos).magnitude;
+            float z_dist = -(track_object.GetComponent<AbstractTrack>().GetStartPoint().z - pos.z);
+            float this_dist = (track_object.GetComponent<AbstractTrack>().GetStartPoint() - pos).magnitude;
             if(z_dist<0){
                 continue;
             }
@@ -125,33 +138,58 @@ public class Tracks : MonoBehaviour
         return track.GetComponent<AbstractTrack>();
     }
 
-    public void RequestPath(TrainController controller){
+    */
 
-        AbstractTrack picked_track = GetTrackAt(controller.get_train_head.transform.position).GetNextTrack();
+    public void RequestPath(TrainController controller){
+        //print("controller requested path");
+
+        AbstractTrack picked_track = Global.Instance.last_inspected_track.GetNextTrack();
+        
+        //print("name of last inspected track: "+Global.Instance.last_inspected_track.name);
+
+        //print("name of the picked_track: "+ picked_track.name);
+
+        
+        /*
         if(Global.Instance.last_inspected_track != null){
             if(!picked_track.Equals(Global.Instance.last_inspected_track)){
-                controller.AddPath(picked_track.GetPath());
+                controller.AddPath(picked_track);
             }
-        }
+        } */
         if(picked_track==null){
             Debug.LogError("RequestPath: picked_track is null");
         }
+
+        if(picked_track.gameObject.CompareTag("Junction")){
+            picked_track.lock_track();
+            controller.AddPath(picked_track);
+            picked_track = picked_track.GetNextTrack();
+        }
+
         
         
-        picked_track.lock_track();
-        Global.Instance.last_inspected_track = picked_track;
+        
+        //picked_track.lock_track();
+        //Global.Instance.last_inspected_track = picked_track;
         
         int count = 0;
-        picked_track = GetNextTrack(picked_track.gameObject);
-        while(!(picked_track.gameObject.CompareTag("Junction") && picked_track.usable_junction())){
+        //picked_track = GetNextTrack(picked_track.gameObject);
+        while(true){
+            if((picked_track.gameObject.CompareTag("Junction") && picked_track.usable_junction())){
+                Global.Instance.junction_queue.Enqueue(picked_track);
+                Global.Instance.ActivateNextJunction();
+                //print("queued next junction: "+ picked_track.name);
+                break;
+            }
             count++;
-            controller.AddPath(picked_track.GetPath());
+            controller.AddPath(picked_track);
             picked_track.lock_track();
 
-            Global.Instance.last_inspected_track = picked_track;
+            //Global.Instance.last_inspected_track = picked_track;
+            //print("adding track: "+ picked_track.name + "; next track: "+picked_track.GetNextTrack());
             picked_track = picked_track.GetNextTrack();
             if(picked_track.Equals(Global.Instance.last_inspected_track)){
-                print("found end");
+                //print("found end");
                 break;
             }
             if(picked_track == null){
@@ -166,12 +204,13 @@ public class Tracks : MonoBehaviour
         
     }
 
+    /*
     public void RequestPath(TrainController controller, AbstractTrack track){
 
         AbstractTrack picked_track = track;
         if(Global.Instance.last_inspected_track != null){
             if(!picked_track.Equals(Global.Instance.last_inspected_track)){
-                controller.AddPath(picked_track.GetPath());
+                controller.AddPath(picked_track);
             }
         }
         if(picked_track==null){
@@ -186,7 +225,7 @@ public class Tracks : MonoBehaviour
         picked_track = GetNextTrack(picked_track.gameObject);
         while(!(picked_track.gameObject.CompareTag("Junction") && picked_track.usable_junction())){
             count++;
-            controller.AddPath(picked_track.GetPath());
+            controller.AddPath(picked_track);
             picked_track.lock_track();
 
             Global.Instance.last_inspected_track = picked_track;
@@ -209,6 +248,8 @@ public class Tracks : MonoBehaviour
         }
         
     }
+
+    */
 
 
 }

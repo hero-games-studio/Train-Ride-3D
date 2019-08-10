@@ -8,7 +8,6 @@ public class Cow : HonkAffectee
     override public void Init(){
         initial_position = transform.localPosition;
         initial_rotation = transform.localRotation;
-        print(initial_position);
     }
 
     private Vector3 initial_position;
@@ -30,6 +29,7 @@ public class Cow : HonkAffectee
         active = false;
         transform.localPosition = initial_position;
         transform.localRotation = initial_rotation;
+        gameObject.GetComponent<Animator>().SetTrigger("Walk");
     }
     
 

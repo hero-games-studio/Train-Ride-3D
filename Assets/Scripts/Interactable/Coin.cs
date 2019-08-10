@@ -53,7 +53,7 @@ public class Coin : MonoBehaviour
         
         transform.Find("Cylinder").Find("obj").Find("particle").GetComponent<ParticleSystem>().Play();
         int max_sound = transform.Find("audio").childCount;
-        int random = (int) (transform.position.x*transform.position.z)%max_sound;
+        int random = ((int) (transform.position.x*transform.position.z))%max_sound;
 
         transform.Find("audio").GetChild(random).GetComponent<AudioSource>().Play();
 
@@ -65,8 +65,13 @@ public class Coin : MonoBehaviour
     }
 
     public void Reset(){
+        gameObject.SetActive(true);
+        activated = false;
         transform.Find("Cylinder").Find("obj").position = transform.position + new Vector3(0,0.7f,0);
         gameObject.GetComponent<Animator>().SetBool("Bob",true);
-        activated = false;
+        transform.Find("Cylinder").Find("obj").Find("particle").GetComponent<ParticleSystem>().Stop();
+
+        transform.Find("Cylinder").Find("obj").localScale = new Vector3(0.5f,0.025f,0.5f);
+        transform.Find("Cylinder").Find("obj").eulerAngles = new Vector3(90,0,0);
     }
 }
