@@ -12,6 +12,17 @@ public class TwoJoin : AbstractTrack
         CalculateNextTrack();
         //Generate paths from children.
 
+        RemakePath();
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    override public void RemakePath(){
         leftpath = new PathSpline();
         Transform leftpathobj = transform.Find("LeftPath");
         for (int i = leftpathobj.childCount-1; i > -1; i--)
@@ -30,13 +41,6 @@ public class TwoJoin : AbstractTrack
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             rightpath.AddNode(newnode);
         }
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
   

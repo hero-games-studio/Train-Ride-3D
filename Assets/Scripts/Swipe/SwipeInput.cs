@@ -119,7 +119,7 @@ public class SwipeInput : MonoBehaviour
         {
             if (Input.touches[0].phase == TouchPhase.Began)
             {
-                tap = true;
+                //tap = true;
                 startTouch = Input.mousePosition;
                 doubleTap = Time.time - lastTap < doubleTapDelta;
                 
@@ -128,6 +128,10 @@ public class SwipeInput : MonoBehaviour
             }
             else if (Input.touches[0].phase == TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
             {
+                swipeDelta = Input.touches[0].position - startTouch;
+                if(swipeDelta.sqrMagnitude < sqrDeadzone){
+                    tap = true;
+                }
                 startTouch = swipeDelta = Vector2.zero;
             }
         }

@@ -5,7 +5,9 @@ public class AutoSnap : EditorWindow
 {
     private Vector3 prevPosition;
     private bool doSnap = true;
-    private float snapValue = 5;
+    private float z_snapValue = 5;
+    private float x_snapValue = 1.7f;
+    private float y_snapValue = 0.2f;
  
     [MenuItem( "Edit/Auto Snap %_l" )]
  
@@ -18,7 +20,9 @@ public class AutoSnap : EditorWindow
     public void OnGUI()
     {
        doSnap = EditorGUILayout.Toggle( "Auto Snap", doSnap );
-       snapValue = EditorGUILayout.FloatField( "Snap Value", snapValue );
+       x_snapValue = EditorGUILayout.FloatField( "X Snap Value", x_snapValue );
+       y_snapValue = EditorGUILayout.FloatField( "Y Snap Value", y_snapValue );
+       z_snapValue = EditorGUILayout.FloatField( "Z Snap Value", z_snapValue );
     }
  
     public void Update()
@@ -38,15 +42,25 @@ public class AutoSnap : EditorWindow
        foreach ( var transform in Selection.transforms )
        {
          var t = transform.transform.position;
-         t.x = Round( t.x );
-         t.y = Round( t.y );
-         t.z = Round( t.z );
+         t.x = RoundX( t.x );
+         t.y = RoundY( t.y );
+         t.z = RoundZ( t.z );
          transform.transform.position = t;
        }
     }
  
-    private float Round( float input )
+    private float RoundX( float input )
     {
-       return snapValue * Mathf.Round( ( input / snapValue ) );
+       return x_snapValue * Mathf.Round( ( input / x_snapValue ) );
+    }
+
+    private float RoundY( float input )
+    {
+       return y_snapValue * Mathf.Round( ( input / y_snapValue ) );
+    }
+
+    private float RoundZ( float input )
+    {
+       return z_snapValue * Mathf.Round( ( input / z_snapValue ) );
     }
 }

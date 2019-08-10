@@ -7,10 +7,16 @@ public class Tracks : MonoBehaviour
     // Start is called before the first frame update
 
     //video
-    public GameObject middle_end;
     //
-    public GameObject starting_track;
-    public GameObject end_track;
+    public Segment starting_segment;
+
+    private List<Segment> segment_array = new List<Segment>();
+
+    public List<Segment> get_segment_array{
+        get{
+            return segment_array;
+        }
+    }
 
     private List<GameObject> track_array = new List<GameObject>();
 
@@ -19,12 +25,13 @@ public class Tracks : MonoBehaviour
             return track_array;
         }
     }
+
     void Start()
     {
-        EventManager.StartListening("TrainStart",CancelMiddle);
         for (int i = 0; i < transform.childCount; i++)
         {
-            track_array.Add(transform.GetChild(i).gameObject);
+            segment_array.Add(transform.GetChild(i).gameObject.GetComponent<Segment>());
+            track_array.AddRange(transform.GetChild(i).gameObject.GetComponent<Segment>().GetTrackArray());
         }
         Global.Instance.tracks_object = this;
     }
@@ -35,8 +42,18 @@ public class Tracks : MonoBehaviour
         
     }
 
+    public void UpdateArrays(){
+        segment_array.Clear();
+        track_array.Clear();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            segment_array.Add(transform.GetChild(i).gameObject.GetComponent<Segment>());
+            track_array.AddRange(transform.GetChild(i).gameObject.GetComponent<Segment>().GetTrackArray());
+        }
+    }
+
     public AbstractTrack GetNextTrack(){
-        return starting_track.GetComponent<AbstractTrack>();
+        return Global.Instance.station_queue.Peek().GetFirstTrack();
     }
 
     public AbstractTrack GetNextTrack(GameObject track){
@@ -111,7 +128,57 @@ public class Tracks : MonoBehaviour
     public void RequestPath(TrainController controller){
 
         AbstractTrack picked_track = GetTrackAt(controller.get_train_head.transform.position).GetNextTrack();
-        controller.AddPath(picked_track.GetPath());
+        if(Global.Instance.last_inspected_track != null){
+            if(!picked_track.Equals(Global.Instance.last_inspected_track)){
+                controller.AddPath(picked_track.GetPath());
+            }
+        }
+        if(picked_track==null){
+            Debug.LogError("RequestPath: picked_track is null");
+        }
+        
+        
+        picked_track.lock_track();
+        Global.Instance.last_inspected_track = picked_track;
+        
+        int count = 0;
+        picked_track = GetNextTrack(picked_track.gameObject);
+        while(!(picked_track.gameObject.CompareTag("Junction") && picked_track.usable_junction())){
+            count++;
+            controller.AddPath(picked_track.GetPath());
+            picked_track.lock_track();
+
+            Global.Instance.last_inspected_track = picked_track;
+            picked_track = picked_track.GetNextTrack();
+            if(picked_track.Equals(Global.Instance.last_inspected_track)){
+                print("found end");
+                break;
+            }
+            if(picked_track == null){
+                Debug.LogWarning("picked track is null");
+                break;
+            }
+            if(count>100){
+                Debug.LogError("COUNT TOO HIGH. INFO: "+picked_track.gameObject.name);
+                return;
+            }
+        }
+        
+    }
+
+    public void RequestPath(TrainController controller, AbstractTrack track){
+
+        AbstractTrack picked_track = track;
+        if(Global.Instance.last_inspected_track != null){
+            if(!picked_track.Equals(Global.Instance.last_inspected_track)){
+                controller.AddPath(picked_track.GetPath());
+            }
+        }
+        if(picked_track==null){
+            Debug.LogError("RequestPath: picked_track is null");
+        }
+        
+        
         picked_track.lock_track();
         Global.Instance.last_inspected_track = picked_track;
         
@@ -128,6 +195,13 @@ public class Tracks : MonoBehaviour
                 Debug.LogWarning("picked track is null");
                 break;
             }
+            if(Global.Instance.last_inspected_track != null){
+                if(picked_track.Equals(Global.Instance.last_inspected_track)){
+                    print("found end");
+                    break;
+                }
+            }
+            
             if(count>100){
                 Debug.LogError("COUNT TOO HIGH. INFO: "+picked_track.gameObject.name);
                 return;
@@ -135,24 +209,6 @@ public class Tracks : MonoBehaviour
         }
         
     }
-    bool active = true;
-    public float GetSpeedMultiplier(GameObject train_head){
-        float diff1 = train_head.gameObject.transform.position.z - middle_end.transform.position.z;
-        float diff2 = train_head.gameObject.transform.position.z - end_track.transform.position.z;
-        float diff = Mathf.Min(Mathf.Abs(diff1),Mathf.Abs(diff2));
-        if(Mathf.Abs(diff) < 0.1f && active){
-            Global.Instance.WaitingForTap = true;
-            return 0;
-        }
-        if(Mathf.Abs(diff) < 7){
-            return 0.1f+Mathf.Abs(diff)/8;
-        }else{
-            active = true;
-        }
-        return 1f;
-    }
 
-    public void CancelMiddle(){
-        active = false;
-    }
+
 }

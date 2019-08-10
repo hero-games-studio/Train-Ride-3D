@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TigerForge;
+
+
 public class TwoWayJunction : AbstractTrack
 {
     // Start is called before the first frame update
@@ -9,14 +11,31 @@ public class TwoWayJunction : AbstractTrack
 
     private bool locked = false;
 
+    public bool debug = false;
+
     private bool active = false;
     public PathSpline leftpath;
     public PathSpline rightpath;
 
+    private SkinnedMeshRenderer mesh_renderer;
+
+    
     override public void Init()
     {
         CalculateNextTrack();
         //Generate paths from children.
+        RemakePath();
+
+        mesh_renderer = transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>();
+        System.Random rand = new System.Random();
+        _picked_dir = rand.Next(0,2)*2 - 1;
+        update_visual();
+
+        EventManager.StartListening("SwipeRight",swiperight);
+        EventManager.StartListening("SwipeLeft",swipeleft);
+    }
+
+    override public void RemakePath(){
         leftpath = new PathSpline();
         Transform leftpathobj = transform.Find("LeftPath");
         for (int i = 0; i < leftpathobj.childCount; i++)
@@ -34,13 +53,6 @@ public class TwoWayJunction : AbstractTrack
             PathNode newnode = new PathNode(child.position.x,child.position.z,child.position.y);
             rightpath.AddNode(newnode);
         }
-
-        System.Random rand = new System.Random();
-        _picked_dir = rand.Next(0,2)*2 - 1;
-        update_visual();
-
-        EventManager.StartListening("SwipeRight",swiperight);
-        EventManager.StartListening("SwipeLeft",swipeleft);
     }
 
     
@@ -88,10 +100,13 @@ public class TwoWayJunction : AbstractTrack
         if(locked){
             //transform.Find("LeftVisual").gameObject.SetActive(true);
             //transform.Find("RightVisual").gameObject.SetActive(true);
+            /*
             transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
+            */
+            transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             return;
         }
         Vector4 active_color;
@@ -100,18 +115,24 @@ public class TwoWayJunction : AbstractTrack
         } else {
             active_color = AbstractTrack.jc_queued;
         }
-
+        transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetVector("_Color",active_color/255);
         if(_picked_dir == -1){
+            transform.Find("VisualDir").gameObject.GetComponent<Animator>().SetBool("right",false);
+            /*
             transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("LeftVisual").Find("LeftVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("LeftVisual").gameObject.SetActive(true);
             transform.Find("RightVisual").gameObject.SetActive(false);
+            */
             //transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
         } else {
+            transform.Find("VisualDir").gameObject.GetComponent<Animator>().SetBool("right",true);
+            /*
             transform.Find("RightVisual").Find("RightVisualC").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",active_color/255);
             transform.Find("LeftVisual").gameObject.SetActive(false);
             transform.Find("RightVisual").gameObject.SetActive(true);
+            */
             //transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
         }
     }
@@ -120,6 +141,7 @@ public class TwoWayJunction : AbstractTrack
         if(locked){
             return;
         }
+        gameObject.GetComponent<AudioSource>().Play();
         if(dir<=0){
             _picked_dir = -1;
         }else{
@@ -142,10 +164,15 @@ public class TwoWayJunction : AbstractTrack
 
     override public void lock_track(){
         if(usable_junction()){
-            TapDetection.UpdateNextJunction(this);
+            GameHandler.UpdateNextJunction(this);
         }
         locked = true;
         active = false;
+        update_visual();
+    }
+
+    override public void unlock_track(){
+        locked = false;
         update_visual();
     }
 

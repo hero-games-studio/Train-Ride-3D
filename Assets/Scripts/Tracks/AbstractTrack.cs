@@ -25,6 +25,10 @@ public abstract class AbstractTrack : MonoBehaviour
 
     abstract public void lock_track();
 
+    virtual public void unlock_track(){
+
+    }
+
     abstract public float get_miny();
     abstract public float get_maxy();
 
@@ -55,5 +59,12 @@ public abstract class AbstractTrack : MonoBehaviour
 
     virtual public void TagNextJunction(){
 
+    }
+
+    abstract public void RemakePath();
+
+    virtual public void ResetTrack(){
+        RemakePath();
+        unlock_track();
     }
 }

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Direction
-  m_Shader: {fileID: -6465566751694194690, guid: d01b3489b25e4fa43884258c893807f8,
+  m_Shader: {fileID: -6465566751694194690, guid: b8156273acb86c944a7bcfecdbf0a301,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

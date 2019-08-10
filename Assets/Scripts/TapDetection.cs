@@ -9,7 +9,6 @@ public class TapDetection : MonoBehaviour
     void Start()
     {
         Input.simulateMouseWithTouches = false;
-        UpdateNextJunction();
         gameObject.GetComponent<TouchController>().addBehaviour(TouchPhase.Began,TouchMethod);
 
     }
@@ -25,45 +24,7 @@ public class TapDetection : MonoBehaviour
         //#endif
     }
 
-    private static AbstractTrack next_junction;
-
-    public static void UpdateNextJunction(){
-        Tracks tracks_obj = Global.Instance.tracks_object;
-        Vector3 initial_pos = Global.Instance.train_head.transform.position;
-
-        AbstractTrack picked_track = tracks_obj.GetNextTrack(initial_pos);
-        while(!picked_track.gameObject.CompareTag("Junction") || !picked_track.usable_junction()){
-            picked_track = tracks_obj.GetNextTrack(picked_track.gameObject);
-            if(picked_track == null){
-                Debug.LogWarning("picked track is null");
-                break;
-            }
-        }
-        next_junction = picked_track;
-        next_junction.TagNextJunction();
-    }
-    public static void UpdateNextJunction(AbstractTrack track){
-        Tracks tracks_obj = Global.Instance.tracks_object;
-        Vector3 initial_pos = Global.Instance.train_head.transform.position;
-
-        int count = 0;
-        AbstractTrack picked_track = tracks_obj.GetNextTrack(track.gameObject);
-        while(!picked_track.gameObject.CompareTag("Junction") || !picked_track.usable_junction()){
-            count++;
-            picked_track = tracks_obj.GetNextTrack(picked_track.gameObject);
-            if(picked_track == null){
-                Debug.LogWarning("picked track is null");
-                break;
-            }
-            if(count>100){
-                Debug.LogError("NEXT JUNCTION INFINITE");
-                return;
-            }
-        }
-        next_junction = picked_track;
-        
-        next_junction.TagNextJunction();
-    }
+    
 
     private static void ClickMethod()
     {   
@@ -90,11 +51,6 @@ public class TapDetection : MonoBehaviour
                 Global.Instance.WaitingForTap = false;
             }
             return;
-            if(next_junction!=null){
-                EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
-                EventManager.EmitEvent("JUNCTION_TAPPED");
-                return;
-            }
         }
 
     }
@@ -129,13 +85,6 @@ public class TapDetection : MonoBehaviour
                 Global.Instance.WaitingForTap = false;
             }
             return;
-            if(next_junction!=null){
-                EventManager.SetData("JUNCTION_TAPPED", next_junction.gameObject);
-                EventManager.EmitEvent("JUNCTION_TAPPED");
-                return;
-            }else{
-                IOSdebug("next junction is null");
-            }
                 
         }
     }

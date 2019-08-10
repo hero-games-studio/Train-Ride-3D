@@ -42,8 +42,12 @@ public class TrainCollision : MonoBehaviour
             }
             if(tag == "coin"){
                 //Destroy(data[0]);
-                data[0].SetActive(false);
+                //data[0].SetActive(false);
+                data[0].GetComponent<Coin>().ActivateCoin();
                 EventManager.EmitEvent("CoinCollected");
+            }
+            if(tag == "cow"){
+                data[0].GetComponent<Cow>().Honk();
             }
         }
     }

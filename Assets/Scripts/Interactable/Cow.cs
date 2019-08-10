@@ -6,17 +6,32 @@ public class Cow : HonkAffectee
 {
     
     override public void Init(){
-
+        initial_position = transform.localPosition;
+        initial_rotation = transform.localRotation;
+        print(initial_position);
     }
 
+    private Vector3 initial_position;
+    private Quaternion initial_rotation;
     private float speed = 15f;
     private bool active = false;
     private Vector3 dir;
     override public void Honk(){
         //Destroy(gameObject);
+        if(active){
+            return;
+        }
         active = true;
         gameObject.GetComponent<Animator>().SetTrigger("Walk");
+        gameObject.GetComponent<AudioSource>().Play();
     }
+
+    public void Reset(){
+        active = false;
+        transform.localPosition = initial_position;
+        transform.localRotation = initial_rotation;
+    }
+    
 
     void Update() {
         if(!active)
@@ -29,8 +44,8 @@ public class Cow : HonkAffectee
             dir.x = new System.Random().Next(0,2)*2 - 1;
         }
         transform.LookAt(
-            transform.position + Quaternion.AngleAxis(90, Vector3.up) * dir
+            transform.localPosition + Quaternion.AngleAxis(90, Vector3.up) * dir
         );
-        transform.position += dir*Time.deltaTime*speed;
+        transform.localPosition += dir*Time.deltaTime*speed;
     }
 }

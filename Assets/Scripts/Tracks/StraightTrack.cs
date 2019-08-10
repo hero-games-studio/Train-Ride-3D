@@ -11,6 +11,16 @@ public class StraightTrack : AbstractTrack
     override public void Init()
     {
         CalculateNextTrack();
+        RemakePath();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    override public void RemakePath(){
         path = new PathSpline();
         Transform pathobj = transform.Find("Path");
         for (int i = 0; i < pathobj.childCount; i++)
@@ -21,13 +31,12 @@ public class StraightTrack : AbstractTrack
             path.AddNode(newnode);
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     override public PathSpline GetPath(){
+        if(path == null){
+            Debug.LogError("Path is null");
+            Init();
+            return path;
+        }
         return path;
     }
 
