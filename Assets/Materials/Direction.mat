@@ -8,13 +8,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Direction
-  m_Shader: {fileID: -6465566751694194690, guid: b8156273acb86c944a7bcfecdbf0a301,
+  m_Shader: {fileID: -6465566751694194690, guid: 11c15c01cd665514ab9d1867a9cd17e3,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 1500
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
