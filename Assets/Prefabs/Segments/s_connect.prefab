@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2202362663291471552
 Transform:
   m_ObjectHideFlags: 0
@@ -235,6 +235,7 @@ MonoBehaviour:
   significant_track: {fileID: 2550323565089984130}
   first_track: {fileID: 2550323565656980711}
   is_station: 1
+  gold_rich: 0
 --- !u!1 &7460390009930637075
 GameObject:
   m_ObjectHideFlags: 0

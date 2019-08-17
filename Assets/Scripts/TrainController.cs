@@ -7,53 +7,27 @@ public class TrainController : MonoBehaviour
 {
     public int framerate_target = 60;
 
-    public bool active = false;
-
-    //------//
-    [Header("Train settings")]
-    public int carriage_count = 2;
-
+    
     private float current_speed;
     public float min_train_speed = 2;
     public float max_train_speed = 5;
     public float acceleration = 0.2f;
     public float seperation = 1.4f;
 
-    private PathSpline traverser_path = new PathSpline();
+    
 
     
-    [Header("References")]
-    public Tracks tracks_object;
-
-    [Header("Prefabs")]
-    public GameObject train_head_prefab;
-    public GameObject carriage_prefab;
+    
 
 
 
     private bool _CRASHED = false;
-    private GameObject train_head;
 
-    public GameObject get_train_head{
-        get{
-            return train_head;
-        }
-    }
     private CameraController camera_controller;
-    private LinkedList<GameObject> train_carriages = new LinkedList<GameObject>();
+    
+    [SerializeField] private GameHandler game_handler;
     // Start is called before the first frame update
 
-    void InitializeTrain(){
-
-        train_head = Instantiate(train_head_prefab);
-        Global.Instance.train_head = train_head;
-        distance_travelled = 15;
-        for (int i = 0; i < carriage_count; i++)
-        {
-            GameObject new_carriage = Instantiate(carriage_prefab);
-            train_carriages.AddLast(new_carriage);
-        }
-    }
     void Start()
     {
         Global.Instance.train_controller = this;
@@ -68,7 +42,7 @@ public class TrainController : MonoBehaviour
         camera_controller = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraController>();
         //find start path
         //track_list.Enqueue(tracks_object.starting_track.GetComponent<AbstractTrack>());
-        InitializeTrain();
+        
         
     }
 
@@ -96,72 +70,23 @@ public class TrainController : MonoBehaviour
         junction.toggle_direction();
     }
 
-    private float distance_travelled = 0;
-    private Queue<AbstractTrack> track_list = new Queue<AbstractTrack>();
-    private Dictionary<GameObject,float> carriage_dist_travelled_map = new Dictionary<GameObject,float>();
-
-
-    public void AddPath(AbstractTrack track){
-        //paused = true;
-        //path_queue.Add(path);
-        //pos_map.Add(totalLength,path);
-        
-        PathSpline path = track.GetPath();
-        LinkedList<KeyValuePair<float,PathNode>> list = new LinkedList<KeyValuePair<float,PathNode>>();
-        if(path==null){
-            return;
-        }
-        
-        foreach (KeyValuePair<float,PathNode> temp in path.node_map)
-        {
-            list.AddLast(temp);
-        }
+    
 
 
 
-        foreach (KeyValuePair<float,PathNode> temp in list)
-        {   
-            if(traverser_path.back != null){
-                if(Mathf.Abs(temp.Value.x - traverser_path.back.x)<0.05 && Mathf.Abs(temp.Value.y - traverser_path.back.y)<0.05){
-                    continue;
-                }
-                if(Mathf.Abs(temp.Value.x - traverser_path.back.x)>5 && Mathf.Abs(temp.Value.y - traverser_path.back.y)>5){
-                    continue;
-                }
-            }
-            //liner.positionCount = (liner.positionCount + 1);
-            PathNode newnode = new PathNode(temp.Value.x,temp.Value.y,temp.Value.z);
-            //vertices.Add(newnode.getVector() + new Vector3(0,5,0));
-            //Point newpoint = Instantiate(linerendererobj, new Vector3(newnode.x, 2, newnode.y), Quaternion.identity).GetComponent<Point>();
-            //newpoint.SetNum(count);
-            //count++;
-            //liner.SetPositions(vertices.ToArray());
-            traverser_path.AddNode(newnode);
-        }
-        //paused = false;
-        Global.Instance.last_inspected_track = track;
-    }
-
-    public void AddSegment(Segment seg){
-        List<AbstractTrack> list = seg.GetTracksInOrder();
-
-        foreach (AbstractTrack item in list)
-        {
-            AddPath(item);
-        }
-    }
 
     private int count = 0;
 
     private Vector3 _up = new Vector3(0,1,0);
     void Update() {
-        if(_CRASHED || !active){
+        if(_CRASHED) { // || !active){
             current_speed = 0;
         }else{
             if(!stopping){
                 current_speed = Mathf.Clamp(current_speed + acceleration*Time.deltaTime,min_train_speed,max_train_speed);
-                distance_travelled += (current_speed) * Time.deltaTime;
+                //distance_travelled += (current_speed) * Time.deltaTime;
             }else{
+                /*
                 float diff = (train_head.transform.position - Global.Instance.current_level.end_station.significant_track.transform.position).magnitude;
                 float newspeed = Mathf.Clamp(max_train_speed - (slow_zone - diff)*max_train_speed/slow_zone,0,max_train_speed);
                 
@@ -170,11 +95,12 @@ public class TrainController : MonoBehaviour
                 }
                 current_speed = newspeed;
                 distance_travelled += (current_speed) * Time.deltaTime;
+                */
             }
             
         }
 
-        StationCheck();
+        //StationCheck();
         /*
         if(Time.realtimeSinceStartup>5 && !_CRASHED){
             float calc_speed = CalculateCurrentSpeed() * tracks_object.GetSpeedMultiplier(train_head);
@@ -183,7 +109,7 @@ public class TrainController : MonoBehaviour
         } */
 
         
-        LevelBar.Instance.SetValue(train_head.transform.position.z);
+        //LevelBar.Instance.SetValue(train_head.transform.position.z);
 
         
 
@@ -194,22 +120,23 @@ public class TrainController : MonoBehaviour
             print("adding " + last_track.gameObject.name);
             AddPath(last_track.GetPath());
         }*/
-        if(traverser_path.totalLength - distance_travelled < 1.4f && active){
-            tracks_object.RequestPath(this);
+        //if(traverser_path.totalLength - distance_travelled < 1.4f && active){
+            //tracks_object.RequestPath(this);
 
             //AbstractTrack nexttrack = tracks_object.GetNextTrack(train_head.transform.position + new Vector3(0,0,-1));
             //track_list.Enqueue(nexttrack);
             //nexttrack.lock_track();
-        }
+       // }
 
-        train_head.transform.position = traverser_path.PositionAt(distance_travelled,train_head);
-        train_head.transform.SetPositionAndRotation(train_head.transform.position, Quaternion.LookRotation(traverser_path.directionAt(distance_travelled,train_head),_up));
+        //train_head.transform.position = traverser_path.PositionAt(distance_travelled,train_head);
+        //train_head.transform.SetPositionAndRotation(train_head.transform.position, Quaternion.LookRotation(traverser_path.directionAt(distance_travelled,train_head),_up));
         if(camera_controller != null){
             camera_controller.UpdateCamera();
         }
 
 
         count = 0;
+        /*
         foreach (GameObject carriage in train_carriages)
         {
             count++;
@@ -217,7 +144,7 @@ public class TrainController : MonoBehaviour
             carriage.transform.SetPositionAndRotation(carriage.transform.position, Quaternion.LookRotation(traverser_path.directionAt(Mathf.Clamp(distance_travelled - count*seperation,0,distance_travelled),carriage),_up));
 
             
-        }
+        } */
 
         
     }
@@ -226,10 +153,11 @@ public class TrainController : MonoBehaviour
     private float slow_zone = 7f;
     private bool stopping = false;
     private bool at_station = false;
-
+/*
     private void StationCheck(){
-        dist = (train_head.transform.position - Global.Instance.current_level.end_station.significant_track.transform.position).magnitude;
+        dist = (train_head.transform.position - game_handler.current_level.end_station.significant_track.transform.position).magnitude;
         if(dist < slow_zone){
+            active = false;
             stopping = true;
         }
 
@@ -238,13 +166,13 @@ public class TrainController : MonoBehaviour
             EventManager.EmitEvent("LevelFinished");
             at_station = true;
         }
-    }
+    } */
 
     public void OnTap(){
         if(at_station){
             print("start!!");
             stopping = false;
-            active = true;
+            //active = true;
             at_station = false;
         }
     }
@@ -299,6 +227,6 @@ public class TrainController : MonoBehaviour
     }
 
     private void Honk(){
-        train_head.transform.Find("Honk").GetComponent<AudioSource>().Play();
+        //train_head.transform.Find("Honk").GetComponent<AudioSource>().Play();
     }
 }

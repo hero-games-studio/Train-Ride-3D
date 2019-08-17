@@ -2,77 +2,93 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TigerForge;
+using LevelInfo;
 
 public class SegmentManager : MonoBehaviour
 {  
     
     private int next_complexity;
-    private Vector2 next_position;
+    private static Vector2 next_position;
 
     private bool spawn_station;
 
     [SerializeField] private Tracks tracks_object;
+    [SerializeField] private GameHandler game_handler;
     [SerializeField] private TrainController train_controller_object;
+    
+    private Dictionary<int,Level> generated_levels = new Dictionary<int,Level>();
     Segment st1;
     void Start()
     {
+        Global.Instance.segment_manager = this;
         next_position = Vector2.up*-2;
-        st1 = SpawnSegment("station");
-        GenerateLevel();
-        GenerateLevel();
-        //train_controller_object.AddPath(tracks_object.GetNextTrack().GetPath());
-        //tracks_object.RequestPath(train_controller_object,st1.GetFirstTrack());
-        train_controller_object.AddSegment(st1);
-        tracks_object.RequestPath(train_controller_object);
-        Global.Instance.ActivateNextJunction();
-        EventManager.EmitEvent("Activate_Train");
-        EventManager.StartListening("LevelFinished",GenerateLevel);
-        Global.Instance.UpdateUIForLevel();
     }
 
-    int level = 0;
-    int count = 1;
-    private void GenerateLevel(){
 
-        level++;
-        Global.Level new_level = new Global.Level();
-        new_level.number = level;
-        //new_level.level_completed = false;
-        next_complexity = 2;
-        
-        int segment_count = 3; //(level/4 + 1) + rand.Next(-1,2);
-        if(segment_count < 1){
-            segment_count = 1;
+    // TO-DO: Generate Level based on current level
+    private void GenerateLevel(int level_number, Style style){
+
+        Level new_level;
+        switch(style){
+            case Style.Standart:
+                new_level = new Standart();
+                break;
+            case Style.SimpleShort:
+                new_level = new SimpleShort();
+                break;
+            case Style.SimpleLong:
+                new_level = new SimpleLong();
+                break;
+            case Style.ComplexShort:
+                new_level = new ComplexShort();
+                break;
+            case Style.ComplexLong:
+                new_level = new ComplexLong();
+                break;
+            case Style.GoldRich:
+                new_level = new GoldRich();
+                break;
+            default:
+                new_level = new Standart();
+                break;
         }
         
-        for (int i = 0; i < segment_count; i++)
-        {
-            Segment seg = SpawnNextSegment();
-            //seg.currently_in_level = new_level;
-            //new_level.segments_in_level.Add(seg);
-        }
-        
-        //SpawnNextSegment();
-        //SpawnNextSegment();
-        //SpawnNextSegment();
-        if(Global.Instance.current_level.end_station != null){
-            new_level.start_station = Global.Instance.current_level.end_station;
-        }else{
-            new_level.start_station = st1;
-        }
-        Segment st2 = SpawnSegment("station");
-        new_level.end_station = st2;
+        generated_levels.Add(level_number,new_level);
 
 
+        Segment station= SpawnSegment("station");
+        new_level.start_station = station;
+        new_level.level_state = LevelState.Queued;
+        new_level.number = level_number;
         
-        GenerateTrees(new_level.start_station,new_level.end_station);
-        GenerateCows(new_level.start_station,new_level.end_station);
+
+        new_level.GenerateTracks();
+        
+        if(generated_levels.ContainsKey(level_number-1)){
+            Level prev_level =  generated_levels[level_number - 1];
+            prev_level.end_station = station;
+        }
+        
+        //GenerateTrees(new_level.start_station,new_level.end_station);
+        //GenerateCows(new_level.start_station,new_level.end_station);
         
         tracks_object.UpdateArrays();
         //GameHandler.UpdateNextJunction();
-        Global.Instance.AddLevel(new_level);
+        game_handler.AddLevel(new_level);
     }
 
+    
+    public void UpdateMap(List<int> needs_to_exist){
+        needs_to_exist.Sort();
+        foreach (int num in needs_to_exist)
+        {
+            if(!generated_levels.ContainsKey(num)){
+                GenerateLevel(num,Level.CalculateStyle(num));
+            }
+        }
+    }
+
+    
     [System.Serializable]
     public struct Palette
     {
@@ -157,9 +173,10 @@ public class SegmentManager : MonoBehaviour
         obj.transform.eulerAngles = new Vector3(0,rand.Next(-80,90),0);
     }
 
-    private Segment SpawnSegment(string tag){
+    public Segment SpawnSegment(string tag){
         Segment new_segment = ObjectPool.Instance.SpawnFromPool(tag).GetComponent<Segment>();
         
+        print(tag);
         new_segment.gameObject.transform.SetParent(tracks_object.transform);
         Vector2 start_offset = new_segment.get_start_offset();
         Vector2 end_offset = new_segment.get_end_offset();
@@ -174,16 +191,24 @@ public class SegmentManager : MonoBehaviour
     }
 
 
-    private System.Random rand = new System.Random();
+    private static System.Random rand = new System.Random();
 
-    private string GetTagWithComplexity(int complexity){
+    public static System.Random random{
+        get{
+            return rand;
+        }
+    }
+
+    
+    public static string GetTagWithComplexity(int complexity){
         List<string> list = ObjectPool.Instance.getTags(complexity);
         int min = 0;
         int max = list.Count;
         int index = rand.Next(min,max);
         return list[index];
-    }
+    } 
 
+    /*
     private string CalculateNextTag(){
         if(spawn_station){
             spawn_station = false;
@@ -196,19 +221,20 @@ public class SegmentManager : MonoBehaviour
             next_complexity = 1;
         }
         return tag;
-    }
+    } */
 
+    /*
     private Segment SpawnNextSegment(){
         string tag = CalculateNextTag();
         Segment seg = SpawnSegment(tag);
         return seg;
-    }
+    } */
 
-    private Vector3 ToWorld(Vector2 vec){
+    private static Vector3 ToWorld(Vector2 vec){
         return new Vector3(vec.x*1.7f,0.2f,vec.y*5);
     }
 
-    private Vector2 ToGrid(Vector3 vec){
+    private static Vector2 ToGrid(Vector3 vec){
         return new Vector2(vec.x/1.7f,vec.z/5);
     }
 
@@ -219,8 +245,11 @@ public class SegmentManager : MonoBehaviour
 
     private float train_z;
     void Update()
-    {
-        train_z = Global.Instance.train_head.transform.position.z;
+    {   
+        if(game_handler.get_train_head == null){
+            return;
+        }
+        train_z = game_handler.get_train_head.transform.position.z;
 
         UpdateFloorColor(train_z);
         UpdateBarColor(train_z);

@@ -97,15 +97,17 @@ public class ThreeWayJunction : AbstractTrack
             //transform.Find("LeftVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             //transform.Find("MiddleVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             //transform.Find("RightVisual").gameObject.GetComponent<MeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
-
+            transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Glow",0);
             transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetVector("_Color",AbstractTrack.jc_passive/255);
             return;
         }
         Vector4 active_color;
         if(active){
             active_color = AbstractTrack.jc_active;
+            transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Glow",1);
         } else {
             active_color = AbstractTrack.jc_queued;
+            transform.Find("VisualDir").gameObject.GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Glow",0);
         }
 
         //transform.Find("LeftVisual").gameObject.SetActive(_picked_dir == -1);

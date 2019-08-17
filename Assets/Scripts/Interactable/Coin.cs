@@ -53,7 +53,7 @@ public class Coin : MonoBehaviour
         
         transform.Find("Cylinder").Find("obj").Find("particle").GetComponent<ParticleSystem>().Play();
         int max_sound = transform.Find("audio").childCount;
-        int random = ((int) (transform.position.x*transform.position.z))%max_sound;
+        int random = Mathf.Abs((int) (transform.position.x*transform.position.z))%max_sound;
 
         transform.Find("audio").GetChild(random).GetComponent<AudioSource>().Play();
 

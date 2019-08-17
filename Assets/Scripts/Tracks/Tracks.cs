@@ -140,7 +140,7 @@ public class Tracks : MonoBehaviour
 
     */
 
-    public void RequestPath(TrainController controller){
+    public void RequestPath(GameHandler gamehandler){
         //print("controller requested path");
 
         AbstractTrack picked_track = Global.Instance.last_inspected_track.GetNextTrack();
@@ -162,7 +162,8 @@ public class Tracks : MonoBehaviour
 
         if(picked_track.gameObject.CompareTag("Junction")){
             picked_track.lock_track();
-            controller.AddPath(picked_track);
+            //                                                  CHECK THIS
+            gamehandler.AddPath(picked_track);
             picked_track = picked_track.GetNextTrack();
         }
 
@@ -182,7 +183,9 @@ public class Tracks : MonoBehaviour
                 break;
             }
             count++;
-            controller.AddPath(picked_track);
+
+            //                                                     CHECK THIS
+            gamehandler.AddPath(picked_track);
             picked_track.lock_track();
 
             //Global.Instance.last_inspected_track = picked_track;

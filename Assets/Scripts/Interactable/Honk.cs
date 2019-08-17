@@ -30,7 +30,8 @@ public class Honk : Interactable
     }
 
     override public void OnTap(){
-        if(!Global.Instance.train_controller.active){
+        //DELETED ACTIVE
+        if(!Global.Instance.train_controller){
             return;
         }
         if(active){

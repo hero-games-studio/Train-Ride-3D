@@ -8,6 +8,7 @@ using TMPro;
 public class LevelBar : MonoBehaviour
 {
     // Start is called before the first frame update
+    [Header("Bar")]
     [SerializeField]
     private Color Background_Color;
     [SerializeField]
@@ -21,6 +22,12 @@ public class LevelBar : MonoBehaviour
     [SerializeField]
     private float min = 0;
     private float current;
+
+    [Header("Counter")]
+
+    [SerializeField] private bool counter_active;
+    [SerializeField] private string counter_text;
+    [SerializeField] private Color counter_color;
 
 
     static LevelBar _instance;
@@ -56,33 +63,30 @@ public class LevelBar : MonoBehaviour
 
     private Image bar_bg;
     private Image bar;
+    private Image counter_bg;
     private TextMeshProUGUI lefttext;
     private TextMeshProUGUI righttext;
+    private TextMeshProUGUI countertext;
 
-    //private Color background_text_color;
-    //private Color fill_text_color;
     void Start(){
         bar_bg = transform.Find("BG").GetComponent<Image>();
         bar = transform.Find("BG").Find("Fill").GetComponent<Image>();
+        counter_bg = transform.Find("BG").Find("CounterBG").GetComponent<Image>();
         lefttext = transform.Find("BG").Find("TextL").GetComponent<TextMeshProUGUI>();
         righttext = transform.Find("BG").Find("TextR").GetComponent<TextMeshProUGUI>();
+        countertext = counter_bg.transform.Find("text").GetComponent<TextMeshProUGUI>();
 
         lefttext.text = Left_Text;
         lefttext.color = ContrastColor(Background_Color);
         righttext.text = Right_Text;
         righttext.color = ContrastColor(Background_Color);
+        countertext.text = counter_text;
+        countertext.color = counter_color;
         current = min;
 
         bar_bg.color = Background_Color;
         bar.color = Fill_Color;
 
-        /*
-        float[] bg_rgb = {Background_Color.r*255,Background_Color.g*255,Background_Color.b*255};
-        float[] fill_rgb = {Fill_Color.r*255,Fill_Color.g*255,Fill_Color.b*255};
-
-        float bg_saturation = (Mathf.Max(bg_rgb) - Mathf.Min(bg_rgb))/(Mathf.Max(bg_rgb) + Mathf.Min(bg_rgb));
-        float fill_saturation = (Mathf.Max(fill_rgb) - Mathf.Min(fill_rgb))/(Mathf.Max(fill_rgb) + Mathf.Min(fill_rgb));
-        */
         UpdateBar();
     }
 
@@ -116,6 +120,14 @@ public class LevelBar : MonoBehaviour
         }else{
             righttext.color = ContrastColor(Background_Color);
         }
+
+        if(counter_active){
+            counter_bg.gameObject.SetActive(true);
+        }else{
+            counter_bg.gameObject.SetActive(false);
+        }
+        countertext.text = counter_text;
+        countertext.color = counter_color;
     }
     public void SetValue(float val){
         current = Mathf.Clamp(val,min,max);
@@ -145,31 +157,54 @@ public class LevelBar : MonoBehaviour
     public void UpdateBG_Color(Color bgcol){
         Background_Color = bgcol;
         bar_bg.color = Background_Color;
+        UpdateBar();
     }
 
     public void UpdateFill_Color(Color fc){
         Fill_Color = fc;
         bar.color = Fill_Color;
+        UpdateBar();
+    }
+
+    public void UpdateCounter_Color(Color fc){
+        counter_color = fc;
+        countertext.color = counter_color;
+        UpdateBar();
     }
 
     public void UpdateLeftText(string tx){
         Left_Text = tx;
         if(lefttext!=null)
             lefttext.text = Left_Text;
+        UpdateBar();
     }
 
     public void UpdateRightText(string tx){
         Right_Text = tx;
         if(righttext!=null)
             righttext.text = Right_Text;
+        UpdateBar();
+    }
+
+    public void UpdateCounterText(string tx){
+        counter_text = tx;
+        if(countertext!=null)
+            countertext.text = counter_text;
+        UpdateBar();
+    }
+
+    public void SetCounterActive(bool active){
+        counter_bg.gameObject.SetActive(active);
     }
 
     public void UpdateMin(float m){
         min = m;
+        UpdateBar();
     }
 
     public void UpdateMax(float m){
         max = m;
+        UpdateBar();
     }
 
     public void ResetBar(){

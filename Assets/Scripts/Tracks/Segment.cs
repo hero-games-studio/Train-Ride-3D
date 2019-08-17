@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LevelInfo;
 
 public class Segment : MonoBehaviour
 {
@@ -9,7 +10,9 @@ public class Segment : MonoBehaviour
     [SerializeField] public AbstractTrack significant_track;
     [SerializeField] public AbstractTrack first_track;
     public bool is_station;
-    public Global.Level currently_in_level;
+    public Level currently_in_level;
+
+    public bool gold_rich = false;
     void Start()
     {
         
@@ -71,11 +74,24 @@ public class Segment : MonoBehaviour
     }
 
     private void LoadRandomSet(){
-        Transform sets = transform.Find("sets");
-        System.Random rand = new System.Random();
-        int index = rand.Next(0,sets.childCount);
+        if(!gold_rich){
+            Transform sets = transform.Find("sets");
+            System.Random rand = new System.Random();
+            int index = rand.Next(0,sets.childCount);
+            
+            LoadSet(index);
+        }else{
+            Transform sets = transform.Find("sets");
+            for (int i = 0; i < sets.childCount; i++)
+            {
+                if(sets.GetChild(i).name == "set_gr"){
+                    LoadSet(i);
+                }
+            }
+            
+            return;
+        }
         
-        LoadSet(index);
     }
 
     public Vector2 get_start_offset(){
